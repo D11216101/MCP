@@ -12,6 +12,9 @@
   --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
   --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
   --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --ready-bg:#EFF8FF;--ready-text:#175CD3;--ready-border:#B2DDFF;
+  --partial-bg:#F9F5FF;--partial-text:#6941C6;--partial-border:#D9D6FE;
+  --blocked-bg:#FFF6ED;--blocked-text:#C4320A;--blocked-border:#F9DBAF;
   --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
 }
 body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
@@ -33,156 +36,455 @@ tr:last-child td{border-bottom:none}
 .normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
 .warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
 .critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.ready{background:var(--ready-bg);color:var(--ready-text);border-color:var(--ready-border)}
+.partial{background:var(--partial-bg);color:var(--partial-text);border-color:var(--partial-border)}
+.blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
 .na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:0}
-.stat-card{background:#F8FAFF;border:1px solid var(--border);border-radius:8px;padding:14px 16px}
-.stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px}
-.stat-card .value{font-size:20px;font-weight:700;color:#172B4D}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:0}
+.kpi-card{background:var(--page);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.kpi-label{font-size:12px;color:var(--muted);margin-bottom:4px}
+.kpi-value{font-size:22px;font-weight:700;color:#172B4D;line-height:1.2}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.notice{font-size:12px;color:var(--muted);margin-top:12px;padding:10px 14px;background:#F8FAFF;border-left:3px solid var(--brand);border-radius:0 6px 6px 0;line-height:1.7}
+.notice.warn-notice{background:var(--warning-bg);border-left-color:#B54708;color:var(--warning-text)}
 code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+.sub-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;margin-top:16px}
+.sub-label:first-child{margin-top:0}
+.rec-list{list-style:none;padding:0}
+.rec-list li{font-size:13px;padding:6px 0;border-bottom:1px solid #EEF1F5;display:flex;gap:8px;align-items:flex-start}
+.rec-list li:last-child{border-bottom:none}
+.rec-icon{min-width:18px;color:var(--brand)}
 footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
-@media(max-width:850px){.stat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:850px){.kpi-grid{grid-template-columns:1fr 1fr}.container{padding:24px 14px 40px}}
+@media(max-width:560px){.kpi-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="container">
 
-<div class="hero">
-  <div class="hero-row">
-    <div class="hero-bar"></div>
-    <div>
-      <h1>Scenario 14 — DB 活動 360° 每日報告</h1>
-      <p>觸發：每日排程 ｜ 報告日期：2026-08-25 ｜ 目標：ORDERDB (10.107.85.123) ｜ 發送對象：DBA + 資安團隊</p>
+  <!-- ① 報表標題 -->
+  <div class="hero">
+    <div class="hero-row">
+      <div class="hero-bar"></div>
+      <div>
+        <h1>DB 活動 360° 每日報告</h1>
+        <p>Scenario 14 &nbsp;|&nbsp; 資料庫：ORDERDB (DB2 v11.5.9.0, 10.107.85.123:50000)&nbsp;|&nbsp;
+          報告涵蓋期間：<strong>過去 24 小時</strong>&nbsp;|&nbsp;
+          報告產生時間：<strong>2026-08-25 05:41 UTC</strong>&nbsp;|&nbsp;
+          觸發方式：每日排程（凌晨 1 點）&nbsp;|&nbsp;收件人：DBA + 資安團隊
+        </p>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 關鍵指標 -->
-<div class="section">
-  <div class="section-header"><span class="num">1</span>關鍵指標摘要</div>
-  <div class="section-body">
-    <div class="stat-grid">
-      <div class="stat-card"><div class="label">DB 連線數（當前）</div><div class="value">28</div></div>
-      <div class="stat-card"><div class="label">SYSCATSPACE 使用率</div><div class="value" style="color:#B42318">94.1%</div></div>
-      <div class="stat-card"><div class="label">QRadar OPEN Offense</div><div class="value" style="color:#B54708">7</div></div>
-      <div class="stat-card"><div class="label">GDP ATA 案件（24h）</div><div class="value" style="color:#475467">N/A</div></div>
+  <!-- ② 整體摘要 -->
+  <div class="section">
+    <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+    <div class="section-body">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Db2 連線數（即時 Snapshot）</div>
+          <div class="kpi-value">28</div>
+          <div class="kpi-sub"><span class="badge warning">2 UOWWAIT</span>&nbsp;<span class="badge ready">1 UOWEXEC</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Top SQL（即時 Active SQL）</div>
+          <div class="kpi-value">0</div>
+          <div class="kpi-sub"><span class="badge normal">無 Active SQL</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Audit Summary（過去 24h）</div>
+          <div class="kpi-value">N/A</div>
+          <div class="kpi-sub"><span class="badge na">API 不支援</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">QRadar Offense（近 24h 更新）</div>
+          <div class="kpi-value">1</div>
+          <div class="kpi-sub"><span class="badge partial">PARTIAL</span></div>
+        </div>
+      </div>
+      <div class="notice warn-notice" style="margin-top:14px">
+        ⚠ <strong>資料可信度說明：</strong>
+        Db2 連線統計與 Top SQL 均為即時 Snapshot，不代表完整 24 小時統計。
+        Audit Summary（get_audit_summary）與 get_readonly_activity_report 功能在目前 MCP 部署版本不支援，標示 N/A。
+        GDP ATA API 回傳 ErrorCode 3324（執行失敗），標示 BLOCKED。
+        QRadar 僅能依 last_updated_time 篩選，部分 Offense 起始時間早於 24 小時，標示 PARTIAL。
+      </div>
     </div>
   </div>
-</div>
 
-<!-- 連線統計 -->
-<div class="section">
-  <div class="section-header"><span class="num">2</span>Db2 — 連線統計</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>Auth ID</th><th>應用程式</th><th>連線數</th><th>狀態分布</th></tr></thead>
-      <tbody>
-        <tr><td>DB2MCP</td><td>db2jcc_application</td><td>15</td><td>CONNECTED ×13, UOWWAIT ×2</td></tr>
-        <tr><td>DB2MCP</td><td>python3</td><td>1</td><td>UOWEXEC ×1</td></tr>
-        <tr><td>DB2MCP</td><td>Db2 系統程序 (db2fw0~db2fw3, db2stmm 等)</td><td>11</td><td>CONNECTED</td></tr>
-        <tr><td>DB2INST1</td><td>db2evmg_DB2DETAILDEA</td><td>1</td><td>CONNECTED</td></tr>
-      </tbody>
-    </table>
-    <p style="margin-top:10px;font-size:12px;color:var(--muted)">全天活動報告（get_readonly_activity_report）及稽核摘要（get_audit_summary）：非標準 MCP 端點，無法直接取得；已改用 get_current_connections 提供當前連線快照。</p>
+  <!-- ③ Section 1：連線統計 -->
+  <div class="section">
+    <div class="section-header"><span class="num">2</span>連線統計</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:14px">
+        <strong>說明：</strong>目前 MCP 提供即時 Snapshot（<code>get_current_connections</code>），
+        無法提供過去 24 小時完整連線歷史統計。以下為查詢時間點（2026-08-25 05:41 UTC）的連線狀態。
+        <br><span class="badge partial" style="margin-top:6px;display:inline-flex">PARTIAL — 僅即時 Snapshot，無法代表完整過去 24 小時活動</span>
+      </div>
+      <div class="sub-label">連線彙總</div>
+      <table>
+        <thead>
+          <tr>
+            <th>狀態</th>
+            <th>連線數</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge normal">CONNECTED</span></td>
+            <td>25</td>
+            <td>一般連線（含系統背景行程）</td>
+          </tr>
+          <tr>
+            <td><span class="badge warning">UOWWAIT</span></td>
+            <td>2</td>
+            <td>等待工作單元完成，Agent 8672（來源：10.88.8.131）、Agent 31851（來源：10.107.85.123）</td>
+          </tr>
+          <tr>
+            <td><span class="badge ready">UOWEXEC</span></td>
+            <td>1</td>
+            <td>正在執行工作單元，python3 / Agent 26143（來源：333ceda0744d）</td>
+          </tr>
+          <tr>
+            <td><strong>合計</strong></td>
+            <td><strong>28</strong></td>
+            <td>—</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-label" style="margin-top:18px">UOWWAIT 連線明細（需關注）</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Agent ID</th>
+            <th>應用程式</th>
+            <th>帳號</th>
+            <th>來源主機</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>8672</td>
+            <td>db2jcc_application</td>
+            <td>DB2MCP</td>
+            <td>10.88.8.131</td>
+            <td><span class="badge warning">UOWWAIT</span></td>
+          </tr>
+          <tr>
+            <td>31851</td>
+            <td>db2jcc_application</td>
+            <td>DB2MCP</td>
+            <td>10.107.85.123</td>
+            <td><span class="badge warning">UOWWAIT</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-label" style="margin-top:18px">鎖定狀態（即時）</div>
+      <table>
+        <thead>
+          <tr>
+            <th>帳號</th>
+            <th>應用程式</th>
+            <th>Agent ID</th>
+            <th>鎖定模式</th>
+            <th>鎖定狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DB2MCP</td>
+            <td>python3</td>
+            <td>26150</td>
+            <td>S（共用鎖）</td>
+            <td><span class="badge normal">GRNT（已授予，無阻塞）</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<!-- Top SQL -->
-<div class="section">
-  <div class="section-header"><span class="num">3</span>Db2 — Top SQL（慢查詢）</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>查詢</th><th>結果</th><th>說明</th></tr></thead>
-      <tbody>
-        <tr>
-          <td>get_active_sql</td>
-          <td><span class="badge na">N/A</span></td>
-          <td>SQL1224N (SQLSTATE=55032) — DB Manager 無法接受新請求，活躍 SQL 無法取得</td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- ④ Section 2：Top SQL -->
+  <div class="section">
+    <div class="section-header"><span class="num">3</span>Top SQL</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:14px">
+        <strong>說明：</strong>目前 MCP 提供即時 Active SQL Snapshot（<code>get_active_sql</code>），
+        不具備 24 小時 Top SQL 統計能力（無 SQL history / WLM 歷史分析 API）。
+        <br><span class="badge partial" style="margin-top:6px;display:inline-flex">PARTIAL — 僅即時 Snapshot，無 24 小時 SQL 歷史統計</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>查詢時間</th>
+            <th>Active SQL 數量</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-08-25 05:41 UTC</td>
+            <td>0</td>
+            <td>查詢當下無任何正在執行的 SQL 陳述式</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice" style="margin-top:12px">
+        如需取得 24 小時 Top SQL，建議啟用 Db2 Activity Monitor 或 WLM 歷史統計功能，再透過 AQL 查詢匯出。
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Tablespace -->
-<div class="section">
-  <div class="section-header"><span class="num">4</span>Db2 — Tablespace 使用率（每日快照）</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>Tablespace</th><th>類型</th><th>使用率</th><th>已用/總量（頁）</th><th>狀態</th></tr></thead>
-      <tbody>
-        <tr><td>SYSCATSPACE</td><td>DMS</td><td>94.1%</td><td>30,824 / 32,768</td><td><span class="badge critical">CRITICAL</span></td></tr>
-        <tr><td>USERSPACE1</td><td>DMS</td><td>26.6%</td><td>2,176 / 8,192</td><td><span class="badge normal">NORMAL</span></td></tr>
-        <tr><td>SYSTOOLSPACE</td><td>DMS</td><td>1.9%</td><td>152 / 8,192</td><td><span class="badge normal">NORMAL</span></td></tr>
-        <tr><td>TEMPSPACE1</td><td>SMS</td><td>—</td><td>0</td><td><span class="badge normal">NORMAL</span></td></tr>
-      </tbody>
-    </table>
+  <!-- ⑤ Section 3：Audit Summary -->
+  <div class="section">
+    <div class="section-header"><span class="num">4</span>Audit Summary（稽核摘要）</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:14px">
+        Scenario 14 要求依使用者 / 操作類型彙整過去 24 小時稽核摘要（<code>get_audit_summary(hours=24)</code>）。
+        <br>目前 MCP 部署未提供此 API，無法依時間範圍查詢稽核紀錄。
+        <br><span class="badge na" style="margin-top:6px;display:inline-flex">N/A — get_audit_summary API 目前不支援</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>稽核類型</th>
+            <th>使用者</th>
+            <th>操作數量（過去 24h）</th>
+            <th>備註</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DDL</td>
+            <td colspan="2" style="text-align:center"><span class="badge na">N/A</span></td>
+            <td>API 不支援</td>
+          </tr>
+          <tr>
+            <td>DML（SELECT）</td>
+            <td colspan="2" style="text-align:center"><span class="badge na">N/A</span></td>
+            <td>API 不支援</td>
+          </tr>
+          <tr>
+            <td>DML（UPDATE/INSERT/DELETE）</td>
+            <td colspan="2" style="text-align:center"><span class="badge na">N/A</span></td>
+            <td>API 不支援</td>
+          </tr>
+          <tr>
+            <td>登入 / 登出</td>
+            <td colspan="2" style="text-align:center"><span class="badge na">N/A</span></td>
+            <td>API 不支援</td>
+          </tr>
+          <tr>
+            <td>GRANT / REVOKE</td>
+            <td colspan="2" style="text-align:center"><span class="badge na">N/A</span></td>
+            <td>API 不支援</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice" style="margin-top:12px">
+        若需取得稽核摘要，建議透過 GDP Guardium 的 Audit Report 功能（Report Builder / Audit Process）
+        或 Db2 Audit Facility（<code>db2audit</code>）匯出指定時間區間的記錄。
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- Log -->
-<div class="section">
-  <div class="section-header"><span class="num">5</span>Db2 — Log 使用率</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>資料庫</th><th>Log 使用率</th><th>已用 (KB)</th><th>可用 (KB)</th><th>峰值 (KB)</th><th>Log Archive</th><th>狀態</th></tr></thead>
-      <tbody>
-        <tr><td>ORDERDB</td><td>3.77%</td><td>3,845</td><td>98,054</td><td>5,271</td><td>OFF</td><td><span class="badge normal">NORMAL</span></td></tr>
-      </tbody>
-    </table>
+  <!-- ⑥ Section 4：GDP ATA 威脅案件 -->
+  <div class="section">
+    <div class="section-header"><span class="num">5</span>GDP ATA 威脅案件（過去 24 小時）</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:14px">
+        Scenario 14 要求查詢 GDP ATA 過去 24 小時案件（<code>get_ata_case_info(periodStart=yesterday)</code>）。
+        <br>查詢時 API 回傳 <code>ErrorCode: 3324</code>（執行失敗）。
+        <br>同時嘗試以 <code>status=open</code> 查詢，均回傳同一錯誤，無法取得任何 ATA 案件資料。
+        <br><span class="badge blocked" style="margin-top:6px;display:inline-flex">BLOCKED — ErrorCode 3324，GDP ATA API 執行失敗</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>威脅類型</th>
+            <th>案件數</th>
+            <th>嚴重度</th>
+            <th>受影響 DB</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="5" style="text-align:center;color:var(--muted)">
+              <span class="badge blocked">BLOCKED</span>&nbsp;
+              GDP ATA API 回傳 ErrorCode 3324，無法取得過去 24 小時威脅案件資料
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice" style="margin-top:12px">
+        建議直接登入 GDP Guardium 管理介面（Reports &gt; ATA Cases）手動確認，
+        或聯繫 GDP 系統管理員排查 API 3324 錯誤原因。
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- GDP ATA -->
-<div class="section">
-  <div class="section-header"><span class="num">6</span>GDP — ATA 威脅案件（過去 24 小時）</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>查詢條件</th><th>結果</th><th>說明</th></tr></thead>
-      <tbody>
-        <tr><td>get_ata_case_info(status=open, getCaseDetails=1)</td><td><span class="badge na">N/A</span></td><td>ErrorCode=3324 — API 執行失敗，無法取得 ATA 案件資料</td></tr>
-        <tr><td>get_ata_case_info(threatCategory=SQL Injection)</td><td><span class="badge normal">無案件</span></td><td>[] — 無 SQL Injection 案件</td></tr>
-      </tbody>
-    </table>
+  <!-- ⑦ Section 5：QRadar Offense 清單 -->
+  <div class="section">
+    <div class="section-header"><span class="num">6</span>QRadar Offense 清單（DB 相關 / 近 24 小時更新）</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:14px">
+        <strong>PARTIAL 說明：</strong>QRadar MCP 目前支援依 <code>last_updated_time</code> 篩選，
+        但「last_updated_time 在 24 小時內」≠「Offense 發生在 24 小時內」。
+        部分 Offense 起始時間（start_time）早於 24 小時，僅因近期有新事件更新而出現在結果中。
+        以下僅列出 <em>last_updated_time ≥ 2026-08-24 05:41 UTC（報告基準時間 -24h）</em> 的 Offense，
+        並標示其 start_time 供研判。全部 OPEN Offense（7 筆）清單附於補充欄。
+        <br><span class="badge partial" style="margin-top:6px;display:inline-flex">PARTIAL — 無法精確確認 24 小時內新增 Offense，依 last_updated_time 篩選</span>
+      </div>
+
+      <div class="sub-label">▌ 近 24 小時有更新的 OPEN Offense（1 筆）</div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>嚴重度</th>
+            <th>描述</th>
+            <th>來源帳號</th>
+            <th>事件數</th>
+            <th>起始時間</th>
+            <th>最後更新</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>#194</strong></td>
+            <td><span class="badge warning">7</span></td>
+            <td>Possible Shared Account — Certificate validation passed</td>
+            <td>admin</td>
+            <td>904</td>
+            <td>2026-08-08 13:25</td>
+            <td><strong>2026-08-25 02:14 UTC</strong></td>
+            <td><span class="badge warning">OPEN</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="notice" style="margin-top:12px">
+        ⚠ 此 Offense 起始於 2026-08-08，並非近 24 小時新建。但在 2026-08-25 02:14 UTC 有新事件更新，
+        共累計 904 筆事件，涉及 4 個來源 IP，包含 admin 帳號的多項類別（Cert Validation、SIM 操作、帳號變更）。
+        建議追查 admin 帳號在過去 24 小時的具體動作。
+      </div>
+
+      <div class="sub-label" style="margin-top:20px">▌ 其他 OPEN Offense（last_updated 超過 24h，供參考）</div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>嚴重度</th>
+            <th>描述</th>
+            <th>來源</th>
+            <th>最後更新</th>
+            <th>備註</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#193</td>
+            <td><span class="badge critical">9</span></td>
+            <td>Possible Shared Account — root (User Login)</td>
+            <td>root</td>
+            <td>2026-08-08 13:27</td>
+            <td>早於 24h</td>
+          </tr>
+          <tr>
+            <td>#196</td>
+            <td><span class="badge warning">6</span></td>
+            <td>MITRE T1529 System Shutdown/Reboot — Login Failure</td>
+            <td>10.107.85.32</td>
+            <td>2026-08-19 05:58</td>
+            <td>早於 24h</td>
+          </tr>
+          <tr>
+            <td>#192</td>
+            <td><span class="badge warning">5</span></td>
+            <td>MITRE T1070.001 — Audit Log Cleared</td>
+            <td>10.107.85.13</td>
+            <td>2026-08-07 07:20</td>
+            <td>早於 24h</td>
+          </tr>
+          <tr>
+            <td>#195</td>
+            <td><span class="badge normal">3</span></td>
+            <td>Failure Audit: Account Failed to Log On</td>
+            <td>::1 (loopback)</td>
+            <td>2026-08-18 14:10</td>
+            <td>早於 24h</td>
+          </tr>
+          <tr>
+            <td>#191</td>
+            <td><span class="badge warning">6</span></td>
+            <td>MITRE T1529 System Shutdown/Reboot — Shutdown Clean</td>
+            <td>10.107.85.32</td>
+            <td>2026-07-22 04:47</td>
+            <td>早於 24h</td>
+          </tr>
+          <tr>
+            <td>#190</td>
+            <td><span class="badge normal">3</span></td>
+            <td>Failure Audit: Account Failed to Log On</td>
+            <td>::1 (loopback)</td>
+            <td>2026-07-27 20:45</td>
+            <td>早於 24h</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<!-- QRadar Offense -->
-<div class="section">
-  <div class="section-header"><span class="num">7</span>QRadar — 過去 24 小時 Offense 清單</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>ID</th><th>描述</th><th>嚴重度</th><th>事件數</th><th>最後更新</th><th>狀態</th></tr></thead>
-      <tbody>
-        <tr><td>#194</td><td>Possible Shared Account containing Certificate validation</td><td><span class="badge warning">7</span></td><td>904</td><td>2026-08-25（epoch: 1787624073）</td><td><span class="badge warning">OPEN</span></td></tr>
-        <tr><td>#193</td><td>Possible Shared Account containing User Login</td><td><span class="badge critical">9</span></td><td>16</td><td>2026-08-04（epoch: 1786195623）</td><td><span class="badge critical">OPEN</span></td></tr>
-        <tr><td>#196</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>3</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
-        <tr><td>#191</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>10</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
-        <tr><td>#192</td><td>MITRE.WIN.T1070.001 Indicator Removal on Host: Clear Logs</td><td><span class="badge warning">5</span></td><td>10</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
-        <tr><td>#195</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>7</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
-        <tr><td>#190</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>59</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
-      </tbody>
-    </table>
+  <!-- ⑧ 建議事項 -->
+  <div class="section">
+    <div class="section-header"><span class="num">7</span>建議事項</div>
+    <div class="section-body">
+      <ul class="rec-list">
+        <li>
+          <span class="rec-icon">▸</span>
+          <span><strong>UOWWAIT 連線追蹤：</strong>
+            Agent 8672（10.88.8.131）與 Agent 31851（10.107.85.123）目前均處於 UOWWAIT，
+            建議確認是否有未提交的交易持續佔用，必要時聯繫應用端排查。
+          </span>
+        </li>
+        <li>
+          <span class="rec-icon">▸</span>
+          <span><strong>Audit Summary 功能補充：</strong>
+            建議啟用 Db2 Audit Facility 或整合 GDP Guardium Report，以取得完整每日稽核摘要，
+            滿足 Scenario 14 的報告完整性需求。
+          </span>
+        </li>
+        <li>
+          <span class="rec-icon">▸</span>
+          <span><strong>GDP ATA API 錯誤排查：</strong>
+            ErrorCode 3324 屬 GDP 端 API 執行失敗，建議通知 GDP 系統管理員確認 ATA 服務狀態，
+            並手動確認過去 24 小時是否有威脅案件。
+          </span>
+        </li>
+        <li>
+          <span class="rec-icon">▸</span>
+          <span><strong>Offense #194 追查：</strong>
+            admin 帳號累計 904 筆事件，涉及 4 個來源 IP，涵蓋多種操作類別，
+            建議資安團隊優先確認過去 24 小時 admin 的具體存取行為。
+          </span>
+        </li>
+        <li>
+          <span class="rec-icon">▸</span>
+          <span><strong>Top SQL 歷史統計：</strong>
+            建議開啟 Db2 WLM 服務類別統計或 Activity Event Monitor，
+            以便每日報告能提供完整 24 小時 Top SQL 消耗排行。
+          </span>
+        </li>
+      </ul>
+    </div>
   </div>
-</div>
 
-<!-- 結論 -->
-<div class="section">
-  <div class="section-header"><span class="num">8</span>今日重點 &amp; 建議事項</div>
-  <div class="section-body">
-    <table>
-      <thead><tr><th>優先度</th><th>問題</th><th>建議動作</th></tr></thead>
-      <tbody>
-        <tr><td><span class="badge critical">P1</span></td><td>SYSCATSPACE 94.1% — 即將耗盡</td><td>立即執行 ALTER TABLESPACE 擴充；確認 OS 磁碟空間後操作</td></tr>
-        <tr><td><span class="badge critical">P1</span></td><td>SQL1224N 反覆出現</td><td>排查 db2acd Health Monitor 設定；確認 DB Manager 是否需要重啟</td></tr>
-        <tr><td><span class="badge critical">P2</span></td><td>QRadar Offense #193 (severity=9) 持續 OPEN</td><td>調查 root 帳號共用行為；分配給資安分析師</td></tr>
-        <tr><td><span class="badge warning">P3</span></td><td>GDP ATA API 不可用 (ErrorCode=3324)</td><td>修復後重新確認無威脅案件</td></tr>
-        <tr><td><span class="badge warning">P3</span></td><td>Log Archive (logarchmeth1=OFF)</td><td>啟用 Log Archive 確保可恢復性</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<footer>Made with IBM Bob</footer>
+  <footer>Made with IBM Bob</footer>
 </div>
 </body>
 </html>
