@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MCP 報表格式規範 v1.7</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root{
+    --page:#F5F7FB;
+    --card:#FFFFFF;
+    --text:#1F2937;
+    --muted:#667085;
+    --border:#E4E7EC;
+
+    --brand:#2F6BFF;
+    --brand-dark:#2447A8;
+    --brand-soft:#EEF4FF;
+
+    --normal-bg:#ECFDF3; --normal-text:#027A48; --normal-border:#ABEFC6;
+    --warning-bg:#FFFAEB; --warning-text:#B54708; --warning-border:#FEDF89;
+    --critical-bg:#FEF3F2; --critical-text:#B42318; --critical-border:#FECDCA;
+    --ready-bg:#EFF8FF; --ready-text:#175CD3; --ready-border:#B2DDFF;
+    --partial-bg:#F9F5FF; --partial-text:#6941C6; --partial-border:#D9D6FE;
+    --blocked-bg:#FFF6ED; --blocked-text:#C4320A; --blocked-border:#F9DBAF;
+    --na-bg:#F2F4F7; --na-text:#475467; --na-border:#D0D5DD;
+  }
+
+  body{
+    font-family:"Segoe UI","Noto Sans TC",sans-serif;
+    background:var(--page);
+    color:var(--text);
+    font-size:14px;
+    font-weight:400;
+    line-height:1.65;
+  }
+
+  .container{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
+    padding:40px 24px 56px;
+  }
+
+  .hero{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:28px;
+    margin-bottom:22px;
+    box-shadow:0 2px 8px rgba(16,24,40,.04);
+  }
+
+  .hero-row{display:flex;align-items:flex-start;gap:12px}
+  .hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+
+  h1{
+    font-size:28px;
+    font-weight:700;
+    line-height:1.25;
+    letter-spacing:-.5px;
+    color:#172B4D;
+  }
+
+  .hero p{
+    margin-top:8px;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .section{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    margin-bottom:22px;
+    overflow:hidden;
+    box-shadow:0 2px 8px rgba(16,24,40,.03);
+  }
+
+  .section-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 18px;
+    background:#F8FAFF;
+    border-bottom:1px solid var(--border);
+    border-left:4px solid var(--brand);
+    font-size:15px;
+    font-weight:700;
+    color:#203864;
+  }
+
+  .num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:24px;
+    height:24px;
+    border-radius:6px;
+    background:var(--brand-soft);
+    color:var(--brand-dark);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .section-body{
+    padding:20px;
+    overflow-x:auto;
+  }
+
+  table{
+    width:100%;
+    min-width:680px;
+    border-collapse:separate;
+    border-spacing:0;
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    font-size:13px;
+  }
+
+  th{
+    background:#F8FAFC;
+    color:#475467;
+    font-size:12px;
+    font-weight:600;
+    text-align:left;
+    padding:10px 12px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+
+  td{
+    padding:10px 12px;
+    border-bottom:1px solid #EEF1F5;
+    vertical-align:middle;
+    word-break:break-word;
+  }
+  tr:last-child td{border-bottom:none}
+
+  .preview-title{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:18px 20px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+  }
+  .preview-title .bar{width:5px;height:30px;background:var(--brand);border-radius:4px}
+  .preview-title .text{font-size:28px;font-weight:700;color:#172B4D}
+
+  .preview-sub{
+    margin-top:14px;
+    padding:12px 15px;
+    background:#F8FAFF;
+    border:1px solid var(--border);
+    border-left:4px solid var(--brand);
+    border-radius:0 8px 8px 0;
+    font-size:15px;
+    font-weight:700;
+    color:#203864;
+  }
+
+  .swatches{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:12px;
+  }
+  .swatch{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+  }
+  .color{
+    height:38px;
+    border-radius:7px;
+    margin-bottom:8px;
+    border:1px solid rgba(0,0,0,.05);
+  }
+  .swatch strong{display:block;font-size:13px;margin-bottom:4px}
+
+  code{
+    font-family:Consolas,monospace;
+    font-size:12px;
+    background:#F6F8FA;
+    color:#475467;
+    padding:2px 5px;
+    border-radius:4px;
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    padding:3px 9px;
+    border-radius:12px;
+    font-size:11.5px;
+    font-weight:600;
+    border:1px solid transparent;
+    white-space:nowrap;
+  }
+  .normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+  .warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+  .critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+  .ready{background:var(--ready-bg);color:var(--ready-text);border-color:var(--ready-border)}
+  .partial{background:var(--partial-bg);color:var(--partial-text);border-color:var(--partial-border)}
+  .blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
+  .na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+
+  footer{
+    text-align:center;
+    padding-top:18px;
+    margin-top:36px;
+    border-top:1px solid var(--border);
+    color:#98A2B3;
+    font-size:12px;
+  }
+
+  @media(max-width:850px){
+    .swatches{grid-template-columns:1fr 1fr}
+    .container{padding:24px 14px 40px}
+  }
+  @media(max-width:560px){
+    .swatches{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <div class="hero-row">
+      <div class="hero-bar"></div>
+      <div>
+        <h1>MCP報表格式規範</h1>
+        <p>統一 MCP HTML 報表的 UI、配色與排版樣式。</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="section-header"><span class="num">1</span>字體與字級</div>
+    <div class="section-body">
+      <div class="preview-title"><div class="bar"></div><div class="text">報表主標題</div></div>
+      <div class="preview-sub">1. 區塊標題</div>
+      <div style="height:16px"></div>
+      <table>
+        <thead><tr><th>位置</th><th>字體</th><th>字級</th><th>字重</th></tr></thead>
+        <tbody>
+          <tr><td>報表主標題</td><td>Segoe UI / Noto Sans TC</td><td>28px</td><td>700</td></tr>
+          <tr><td>區塊標題</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>700</td></tr>
+          <tr><td>卡片小標</td><td>Segoe UI / Noto Sans TC</td><td>13px</td><td>600</td></tr>
+          <tr><td>一般內文</td><td>Segoe UI / Noto Sans TC</td><td>14px</td><td>400</td></tr>
+          <tr><td>表格標題</td><td>Segoe UI / Noto Sans TC</td><td>12px</td><td>600</td></tr>
+          <tr><td>表格內容</td><td>Segoe UI / Noto Sans TC</td><td>13px</td><td>400</td></tr>
+          <tr><td>備註文字</td><td>Segoe UI / Noto Sans TC</td><td>12px</td><td>400</td></tr>
+          <tr><td>SQL / 路徑 / 指令</td><td>Consolas</td><td>12px</td><td>400</td></tr>
+          <tr><td>Badge</td><td>Segoe UI</td><td>11.5px</td><td>600</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">2</span>主視覺配色</div>
+    <div class="section-body">
+      <div class="swatches">
+        <div class="swatch"><div class="color" style="background:#2F6BFF"></div><strong>主視覺藍</strong><code>#2F6BFF</code></div>
+        <div class="swatch"><div class="color" style="background:#2447A8"></div><strong>深藍標題</strong><code>#2447A8</code></div>
+        <div class="swatch"><div class="color" style="background:#EEF4FF"></div><strong>淡藍背景</strong><code>#EEF4FF</code></div>
+        <div class="swatch"><div class="color" style="background:#F5F7FB"></div><strong>頁面背景</strong><code>#F5F7FB</code></div>
+        <div class="swatch"><div class="color" style="background:#FFFFFF"></div><strong>卡片背景</strong><code>#FFFFFF</code></div>
+        <div class="swatch"><div class="color" style="background:#1F2937"></div><strong>主要文字</strong><code>#1F2937</code></div>
+        <div class="swatch"><div class="color" style="background:#667085"></div><strong>次要文字</strong><code>#667085</code></div>
+        <div class="swatch"><div class="color" style="background:#E4E7EC"></div><strong>邊框</strong><code>#E4E7EC</code></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">3</span>狀態 Badge 配色</div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>狀態</th><th>範例</th><th>背景色</th><th>文字色</th><th>邊框色</th></tr></thead>
+        <tbody>
+          <tr><td>NORMAL / PASS</td><td><span class="badge normal">NORMAL</span></td><td>#ECFDF3</td><td>#027A48</td><td>#ABEFC6</td></tr>
+          <tr><td>WARNING</td><td><span class="badge warning">WARNING</span></td><td>#FFFAEB</td><td>#B54708</td><td>#FEDF89</td></tr>
+          <tr><td>CRITICAL</td><td><span class="badge critical">CRITICAL</span></td><td>#FEF3F2</td><td>#B42318</td><td>#FECDCA</td></tr>
+          <tr><td>READY</td><td><span class="badge ready">READY</span></td><td>#EFF8FF</td><td>#175CD3</td><td>#B2DDFF</td></tr>
+          <tr><td>PARTIAL</td><td><span class="badge partial">PARTIAL</span></td><td>#F9F5FF</td><td>#6941C6</td><td>#D9D6FE</td></tr>
+          <tr><td>BLOCKED</td><td><span class="badge blocked">BLOCKED</span></td><td>#FFF6ED</td><td>#C4320A</td><td>#F9DBAF</td></tr>
+          <tr><td>N/A</td><td><span class="badge na">N/A</span></td><td>#F2F4F7</td><td>#475467</td><td>#D0D5DD</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">4</span>卡片與版面</div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>項目</th><th>固定值</th></tr></thead>
+        <tbody>
+          <tr><td>主要內容最大寬度</td><td>1200px</td></tr>
+          <tr><td>主要內容寬度</td><td>100%</td></tr>
+          <tr><td>頁面左右 Padding</td><td>24px</td></tr>
+          <tr><td>頁面上方 Padding</td><td>40px</td></tr>
+          <tr><td>頁面下方 Padding</td><td>56px</td></tr>
+          <tr><td>卡片背景</td><td>#FFFFFF</td></tr>
+          <tr><td>卡片邊框</td><td>1px solid #E4E7EC</td></tr>
+          <tr><td>卡片圓角</td><td>10px</td></tr>
+          <tr><td>卡片間距</td><td>22px</td></tr>
+          <tr><td>卡片內容 Padding</td><td>20px</td></tr>
+          <tr><td>區塊標題 Padding</td><td>14px 18px</td></tr>
+          <tr><td>陰影</td><td>0 2px 8px rgba(16,24,40,.03)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">5</span>表格樣式</div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>項目</th><th>固定值 / 樣式</th></tr></thead>
+        <tbody>
+          <tr><td>表格寬度</td><td>100%</td></tr>
+          <tr><td>表頭背景</td><td>#F8FAFC</td></tr>
+          <tr><td>表頭文字</td><td>12px / 600 / #475467</td></tr>
+          <tr><td>表格內容</td><td>13px / 400 / #1F2937</td></tr>
+          <tr><td>儲存格 Padding</td><td>10px 12px</td></tr>
+          <tr><td>列分隔線</td><td>#EEF1F5</td></tr>
+          <tr><td>表格圓角</td><td>10px</td></tr>
+          <tr><td>欄位過多</td><td>允許水平捲動</td></tr>
+          <tr><td>長 SQL / Path</td><td>自動換行，不截斷</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+  <section class="section">
+    <div class="section-header"><span class="num">6</span>報表顯示順序</div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>順序</th><th>顯示區塊</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>報表標題與基本資訊</td><td>放在最上方，讓使用者先知道這份報表是什麼。</td></tr>
+          <tr><td>2</td><td>整體狀態 / 摘要</td><td>先呈現最重要的整體結果與狀態。</td></tr>
+          <tr><td>3</td><td>主要結果 / 關鍵指標</td><td>優先顯示本情境最重要的數值、異常或結果。</td></tr>
+          <tr><td>4</td><td>詳細資料</td><td>放置各 Scenario 實際需要的表格、明細或分析內容。</td></tr>
+          <tr><td>5</td><td>補充資訊 / 圖表 / 明細</td><td>有需要時才放，無需要可省略。</td></tr>
+          <tr><td>6</td><td>建議事項 / 結論</td><td>統一放在報表最後。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">7</span>統一間距</div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>位置</th><th>固定值</th></tr></thead>
+        <tbody>
+          <tr><td>區塊與區塊</td><td>22px</td></tr>
+          <tr><td>標題與內容</td><td>14px</td></tr>
+          <tr><td>表格儲存格</td><td>10px 12px</td></tr>
+          <tr><td>Badge 內距</td><td>3px 9px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>MCP Report UI Visual Standard · v1.7</footer>
+</div>
+</body>
+</html>
