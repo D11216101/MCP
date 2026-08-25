@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 9 — 部署前合規 Checklist</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+  --partial-bg:#F9F5FF;--partial-text:#6941C6;--partial-border:#D9D6FE;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.partial{background:var(--partial-bg);color:var(--partial-text);border-color:var(--partial-border)}
+.verdict{display:inline-flex;align-items:center;padding:5px 14px;border-radius:8px;font-size:14px;font-weight:700}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 9 — 部署前合規 Checklist（Gate Check）</h1>
+      <p>觸發：CI/CD Pipeline Pre-deploy 階段 ｜ 查詢時間：2026-08-25 12:38 UTC+8 ｜ 目標系統：ORDERDB / QM1 / liberty-dev</p>
+    </div>
+  </div>
+</div>
+
+<!-- 總裁定 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>部署裁定（GO / NO-GO）</div>
+  <div class="section-body">
+    <div style="text-align:center;padding:16px 0">
+      <span class="verdict critical" style="background:var(--critical-bg);color:var(--critical-text);border:2px solid var(--critical-border);font-size:20px">🚫 NO-GO — 2 項關鍵檢查失敗</span>
+    </div>
+    <p style="text-align:center;font-size:13px;color:var(--muted);margin-top:10px">GDP ATA API 不可用 + SYSCATSPACE 使用率 94.1%（超過 80% 警戒線），任一失敗即阻止部署</p>
+  </div>
+</div>
+
+<!-- Checklist -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>完整 Checklist 結果</div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr><th>#</th><th>檢查項目</th><th>資料來源</th><th>結果</th><th>詳細說明</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>✓ 1</td>
+          <td>GDP — 目標 DB 已有 S-TAP 且為 Active</td>
+          <td>GDP list_staps</td>
+          <td><span class="badge normal">PASS</span></td>
+          <td>3 個 S-TAP 在線：10.107.85.123 / 10.107.85.125 / 10.107.85.126</td>
+        </tr>
+        <tr>
+          <td>✓ 2</td>
+          <td>GDP — 監控政策已安裝</td>
+          <td>GDP list_installed_policies</td>
+          <td><span class="badge normal">PASS</span></td>
+          <td>已安裝：<code>--20251104_fullsql</code> (GDP-V1223.palsys.com.tw)</td>
+        </tr>
+        <tr>
+          <td>✓ 3</td>
+          <td>GDP — 無 Open 高嚴重度 ATA 案件</td>
+          <td>GDP get_ata_case_info</td>
+          <td><span class="badge partial">PARTIAL</span></td>
+          <td>get_ata_case_info(status=open) 回傳 ErrorCode=3324，無法確認；SQL Injection 子查詢回傳空陣列</td>
+        </tr>
+        <tr>
+          <td>✓ 4</td>
+          <td>QRadar — 無與目標系統相關的 OPEN Offense</td>
+          <td>QRadar list_offenses(status=OPEN)</td>
+          <td><span class="badge critical">FAIL</span></td>
+          <td>7 個 OPEN Offense（含 severity=9 的帳號共用告警 #193）</td>
+        </tr>
+        <tr>
+          <td>✓ 5</td>
+          <td>Db2 — Tablespace 使用率 &lt; 80%</td>
+          <td>Db2 get_db2_runtime(tablespaces)</td>
+          <td><span class="badge critical">FAIL</span></td>
+          <td>SYSCATSPACE 使用率 94.1%，嚴重超標</td>
+        </tr>
+        <tr>
+          <td>✓ 6</td>
+          <td>Db2 — 無 active lock wait / long-running transaction</td>
+          <td>Db2 get_db2_runtime(locks)</td>
+          <td><span class="badge warning">WARNING</span></td>
+          <td>無阻塞 lock；但有 2 筆 UOWWAIT（Agent 8672/31851），需確認是否為長時間交易；get_db2_runtime(transactions) 授權不足</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- GDP 詳情 -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>GDP — S-TAP &amp; 政策詳情</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>S-TAP Host</th><th>S-TAP ID</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>10.107.85.123</td><td>1408</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>10.107.85.125</td><td>1412</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>10.107.85.126</td><td>1392</td><td><span class="badge normal">PASS</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px">
+      <table>
+        <thead><tr><th>已安裝政策</th><th>節點</th><th>狀態</th></tr></thead>
+        <tbody>
+          <tr><td><code>--20251104_fullsql</code></td><td>GDP-V1223.palsys.com.tw</td><td><span class="badge normal">PASS</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- QRadar Offense -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>QRadar — OPEN Offense 清單（阻止部署原因）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>ID</th><th>描述</th><th>嚴重度</th><th>事件數</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>#193</td><td>Possible Shared Account containing User Login</td><td><span class="badge critical">9</span></td><td>16</td><td><span class="badge critical">OPEN</span></td></tr>
+        <tr><td>#194</td><td>Possible Shared Account containing Certificate validation</td><td><span class="badge warning">7</span></td><td>904</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#196</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>3</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#191</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>10</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#192</td><td>MITRE.WIN.T1070.001 Indicator Removal on Host: Clear Logs</td><td><span class="badge warning">5</span></td><td>10</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#195</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>7</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#190</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>59</td><td><span class="badge warning">OPEN</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Db2 -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>Db2 — Tablespace 使用率（阻止部署原因）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Tablespace</th><th>類型</th><th>總頁數</th><th>已用</th><th>空閒</th><th>使用率</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td><strong>SYSCATSPACE</strong></td><td>DMS</td><td>32,768</td><td>30,824</td><td>1,940</td><td><strong>94.1%</strong></td><td><span class="badge critical">FAIL — 超過 80%</span></td></tr>
+        <tr><td>USERSPACE1</td><td>DMS</td><td>8,192</td><td>2,176</td><td>5,984</td><td>26.6%</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>SYSTOOLSPACE</td><td>DMS</td><td>8,192</td><td>152</td><td>8,036</td><td>1.9%</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>TEMPSPACE1</td><td>SMS</td><td>—</td><td>0</td><td>0</td><td>—</td><td><span class="badge normal">PASS</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px">
+      <table>
+        <thead><tr><th>Lock / Transaction 檢查</th><th>結果</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>Active Lock Wait</td><td><span class="badge normal">無阻塞</span></td><td>僅 DB2MCP S lock（GRNT），無等待者</td></tr>
+          <tr><td>Long-running Transaction</td><td><span class="badge warning">UOWWAIT ×2</span></td><td>Agent 8672 (10.88.8.131) + Agent 31851 (10.107.85.123) 處於等待；詳細 lock wait 查詢因授權不足無法取得</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 結論 -->
+<div class="section">
+  <div class="section-header"><span class="num">6</span>建議事項 / 結論</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>失敗項目</th><th>必要修復動作</th><th>預估優先度</th></tr></thead>
+      <tbody>
+        <tr><td>SYSCATSPACE 94.1%（最緊急）</td><td>擴充 SYSCATSPACE（增加容器或重新分配頁數），使用率降至 80% 以下後重新執行 Gate Check</td><td><span class="badge critical">緊急</span></td></tr>
+        <tr><td>QRadar 7 個 OPEN Offense</td><td>評估各 Offense 是否與部署目標系統直接相關；關閉或分配後重新執行 Gate Check</td><td><span class="badge critical">緊急</span></td></tr>
+        <tr><td>GDP ATA API PARTIAL</td><td>修復 ErrorCode=3324 後重新確認無高嚴重度案件</td><td><span class="badge warning">高</span></td></tr>
+        <tr><td>UOWWAIT 連線</td><td>確認 Agent 8672/31851 交易是否為長時間；必要時終止</td><td><span class="badge warning">中</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

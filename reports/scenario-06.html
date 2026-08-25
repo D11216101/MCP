@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 6 — SQL 注入偵測與即時阻斷</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+  --blocked-bg:#FFF6ED;--blocked-text:#C4320A;--blocked-border:#F9DBAF;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 6 — SQL 注入偵測與即時阻斷</h1>
+      <p>觸發：GDP ATA threatCategory = SQL Injection ｜ 查詢時間：2026-08-25 12:38 UTC+8</p>
+    </div>
+  </div>
+</div>
+
+<!-- 整體摘要 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>步驟</th><th>查詢結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>GDP SQL Injection 案件</td><td><span class="badge normal">無案件</span></td><td>get_ata_case_info(threatCategory=SQL Injection) 回傳 [] — 目前無 SQL Injection ATA 案件</td></tr>
+        <tr><td>GDP 所有 Open ATA 案件</td><td><span class="badge na">N/A</span></td><td>ATA API ErrorCode=3324，無法取得所有 Open 案件</td></tr>
+        <tr><td>Instana Error Trace 搜尋</td><td><span class="badge na">N/A</span></td><td>search_spans(error_only=true) 需具體 applicationId 及時間範圍；Instana 當前開放告警未指向 SQL injection 路徑</td></tr>
+        <tr><td>QRadar AQL 查詢</td><td><span class="badge na">未執行</span></td><td>無具體 SQL injection 案件時間戳可作為查詢條件</td></tr>
+        <tr><td>GDP 帳號阻斷 (create_quarantine_until)</td><td><span class="badge blocked">未執行－需授權</span></td><td>無確認的惡意帳號；系統修改操作需授權</td></tr>
+        <tr><td>QRadar 加入黑名單 (add_to_reference_set)</td><td><span class="badge blocked">未執行－需授權</span></td><td>系統修改操作需授權</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:11px 14px;background:var(--normal-bg);border:1px solid var(--normal-border);border-radius:6px;font-size:13px;color:var(--normal-text)">
+      <strong>目前狀態：</strong>GDP ATA 查詢顯示無現行 SQL Injection 案件。觸發條件不成立，但 GDP ATA API 本身存在 ErrorCode=3324 異常，無法完整確認。
+    </div>
+  </div>
+</div>
+
+<!-- GDP SQL Injection -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>GDP — SQL Injection 案件查詢</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢條件</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>threatCategory = SQL Injection, getCaseDetails = 1</td><td><span class="badge normal">空陣列 []</span></td><td>目前無 SQL Injection 威脅案件</td></tr>
+        <tr><td>所有 Open ATA 案件</td><td><span class="badge na">N/A</span></td><td>ErrorCode=3324 — API 執行失敗</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px">
+      <p style="font-size:13px;color:var(--muted)">GDP S-TAP 監控覆蓋：</p>
+      <table style="margin-top:8px">
+        <thead><tr><th>S-TAP Host</th><th>協議</th><th>Port Range</th><th>驗證狀態</th></tr></thead>
+        <tbody>
+          <tr><td>10.107.85.129</td><td>MSSQL</td><td>1433–1434</td><td><span class="badge warning">Unverified</span></td></tr>
+          <tr><td>10.107.85.126</td><td>MSSQL</td><td>1433–1434</td><td><span class="badge warning">Unverified</span></td></tr>
+          <tr><td>10.107.85.125</td><td>ORACLE</td><td>1521</td><td><span class="badge warning">Unverified</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Instana -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>Instana — Error Trace 搜尋（影響範圍確認）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>search_spans(error_only=true)</td><td><span class="badge na">N/A</span></td><td>需具體 applicationId 與 time window 才能執行 trace 分析</td></tr>
+        <tr><td>當前開放告警 (severity=10)</td><td>mcp-test latency 超標</td><td>與 SQL injection 無直接關聯；屬延遲告警非錯誤告警</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QRadar -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>QRadar — Log Source 同時段事件（進入點確認）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Log Source</th><th>類型</th><th>最後事件時間</th><th>狀態</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>storeOffenseInAriel</td><td>Custom REST API</td><td>2025-07-09</td><td><span class="badge normal">SUCCESS</span></td><td>最近活躍 log source</td></tr>
+        <tr><td>WinCollect @ DC01</td><td>WinCollect</td><td>2025-09-28</td><td><span class="badge warning">ERROR</span></td><td>超過 720 分鐘未收到事件</td></tr>
+        <tr><td>AS400Custom @ 10.107.85.99</td><td>AS400Custom</td><td>2025-04-24</td><td><span class="badge warning">ERROR</span></td><td>超過 720 分鐘未收到事件</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">AQL 查詢（create_ariel_search）：無 SQL Injection 案件時間範圍，無法設定有意義的查詢條件，標示 N/A。</p>
+  </div>
+</div>
+
+<!-- 阻斷動作 -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>已執行阻斷動作清單</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>動作</th><th>目標</th><th>執行狀態</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>注入的 SQL 語句</td><td>—</td><td><span class="badge na">N/A</span></td><td>GDP ATA 無案件可取得 SQL 語句</td></tr>
+        <tr><td>進入點 API</td><td>—</td><td><span class="badge na">N/A</span></td><td>需 Instana trace 分析</td></tr>
+        <tr><td>受影響資料</td><td>—</td><td><span class="badge na">N/A</span></td><td>需 ATA 案件詳情</td></tr>
+        <tr><td>GDP 帳號阻斷 (create_quarantine_until)</td><td>惡意 DB 帳號</td><td><span class="badge blocked">未執行－需授權</span></td><td>無確認目標；需人工審核</td></tr>
+        <tr><td>QRadar 黑名單 (add_to_reference_set)</td><td>惡意 IP</td><td><span class="badge blocked">未執行－需授權</span></td><td>無確認惡意 IP；系統修改需授權</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 建議 -->
+<div class="section">
+  <div class="section-header"><span class="num">6</span>建議事項 / 結論</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>項目</th><th>建議</th></tr></thead>
+      <tbody>
+        <tr><td>GDP ATA API 修復</td><td>優先排查 ErrorCode=3324，確保 ATA 告警可正常取得；這是整個 SQL Injection 偵測流程的前提條件</td></tr>
+        <tr><td>S-TAP 驗證</td><td>3 個 S-TAP Inspection Engine 均為 Unverified 狀態，建議執行驗證以確保 SQL 流量被正確攔截監控</td></tr>
+        <tr><td>Instana 整合</td><td>設定 error trace 自動告警，並確保 applicationId 正確配置，以便 SQL injection 事件發生時立即取得 trace</td></tr>
+        <tr><td>WAF / 防注入機制</td><td>確認應用層是否已部署 Prepared Statement 或 WAF 規則，避免 SQL Injection 注入</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

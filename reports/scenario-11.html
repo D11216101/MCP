@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 11 — 敏感資料分類稽核</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+  --blocked-bg:#FFF6ED;--blocked-text:#C4320A;--blocked-border:#F9DBAF;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 11 — 敏感資料分類稽核</h1>
+      <p>觸發：新 schema/table 上線，或定期 PII / 敏感資料清查 ｜ 查詢時間：2026-08-25 12:38 UTC+8 ｜ 目標：ORDERDB</p>
+    </div>
+  </div>
+</div>
+
+<!-- 整體摘要 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>步驟</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>Db2 — 列出新 schema 下的所有資料表</td><td><span class="badge warning">PARTIAL</span></td><td>DB2MCP / DB2INST1 / ORDERDB schema 查詢均回傳空結果（無用戶自建表或授權不足）</td></tr>
+        <tr><td>GDP — 確認分類政策覆蓋 (list_classifier_process)</td><td><span class="badge na">未執行</span></td><td>Db2 資料表清單為空，無目標 schema 可供確認</td></tr>
+        <tr><td>GDP — 確認分類政策 (list_classifier_policy)</td><td><span class="badge na">未執行</span></td><td>同上</td></tr>
+        <tr><td>GDP — 加入 Datasource 並觸發分類 (add_classifier_datasource, execute_cls_process)</td><td><span class="badge blocked">未執行－需授權</span></td><td>系統修改操作，需授權執行</td></tr>
+        <tr><td>QRadar — Log Source 稽核事件覆蓋確認</td><td><span class="badge warning">PARTIAL</span></td><td>已取得 Log Source 清單；多個來源處於 ERROR 狀態</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:11px 14px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:6px;font-size:13px;color:var(--warning-text)">
+      <strong>主要問題：</strong>查詢 DB2MCP / DB2INST1 / ORDERDB schema 下的資料表均回傳空集合（可能為授權限制或 schema 名稱不符）。無法取得實際資料表清單，後續 GDP 分類政策確認步驟均無法執行。
+    </div>
+  </div>
+</div>
+
+<!-- Db2 資料表 -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>Db2 — 資料表清單查詢結果</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢 Schema</th><th>資料庫</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>DB2MCP</td><td>ORDERDB</td><td><span class="badge warning">空集合 (0)</span></td><td>DB2MCP 下無可見資料表，可能缺少 SELECT privilege on syscat.tables</td></tr>
+        <tr><td>DB2INST1</td><td>ORDERDB</td><td><span class="badge warning">空集合 (0)</span></td><td>DB2INST1 schema 下無可見資料表</td></tr>
+        <tr><td>ORDERDB</td><td>ORDERDB</td><td><span class="badge warning">空集合 (0)</span></td><td>ORDERDB 作為 schema 名稱查詢，無結果</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Db2 資料庫版本：DB2 v11.5.9.0，連線使用者：DB2MCP。建議以 SYSIBM.SYSTABLES 或 SYSCAT.TABLES 直接查詢，或授予 DB2MCP 適當的 schema 讀取權限。</p>
+  </div>
+</div>
+
+<!-- GDP 分類 API -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>GDP — 資料分類 API 可用端點（供後續執行參考）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>端點名稱</th><th>方法</th><th>功能</th><th>執行狀態</th></tr></thead>
+      <tbody>
+        <tr><td><code>list_classifier_process</code></td><td>GET</td><td>列出所有分類流程</td><td><span class="badge na">未執行 — 無目標 schema</span></td></tr>
+        <tr><td><code>list_classifier_policy</code></td><td>GET</td><td>列出所有分類政策</td><td><span class="badge na">未執行 — 無目標 schema</span></td></tr>
+        <tr><td><code>add_classifier_datasource</code></td><td>POST</td><td>新增分類 datasource（需 processName, datasourceName）</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td><code>execute_cls_process</code></td><td>PUT</td><td>執行分類流程（需 processName）</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td><code>create_classifier_policy</code></td><td>POST</td><td>建立新分類政策</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QRadar Log Source -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>QRadar — Log Source 覆蓋狀況</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Log Source 名稱</th><th>類型</th><th>發送 IP</th><th>最後事件時間</th><th>Enabled</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>AS400Custom @ 10.107.85.99</td><td>AS400Custom</td><td>10.107.85.2</td><td>2025-04-24</td><td>是</td><td><span class="badge warning">ERROR（720分鐘無事件）</span></td></tr>
+        <tr><td>Verify-IIS2@SecretServer</td><td>Generic Auth</td><td>—</td><td>—</td><td>是</td><td><span class="badge na">NA</span></td></tr>
+        <tr><td>Verify-IIS1@SecretServer</td><td>Generic Auth</td><td>—</td><td>2021-03-03</td><td>是</td><td><span class="badge warning">ERROR（720分鐘無事件）</span></td></tr>
+        <tr><td>WinCollect @ DC01</td><td>WinCollect</td><td>10.107.85.146</td><td>2025-09-28</td><td>是</td><td><span class="badge warning">ERROR（720分鐘無事件）</span></td></tr>
+        <tr><td>storeOffenseInAriel</td><td>Custom REST API</td><td>—</td><td>2025-07-09</td><td>是</td><td><span class="badge normal">SUCCESS</span></td></tr>
+        <tr><td>ServerU@10.107.85.13</td><td>FTP</td><td>—</td><td>2024-02-25</td><td>否</td><td><span class="badge na">DISABLED</span></td></tr>
+        <tr><td>IBMAIXServer @ test</td><td>IBM AIX</td><td>10.107.66.109</td><td>2025-05-25</td><td>是</td><td><span class="badge warning">ERROR（720分鐘無事件）</span></td></tr>
+        <tr><td>Custom Rule Engine-109 (QRadar-EP)</td><td>Custom Rule Engine</td><td>10.107.85.6</td><td>—</td><td>是</td><td><span class="badge na">NA（內部）</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:11px 14px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:6px;font-size:13px;color:var(--warning-text)">
+      <strong>Log Source 覆蓋問題：</strong>4 個 Log Source 處於 ERROR 狀態（超過 720 分鐘無事件收集）。無法確認 ORDERDB 的稽核事件是否被正確收集。
+    </div>
+  </div>
+</div>
+
+<!-- 建議 -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>未受保護的資料表清單 / 建議</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>項目</th><th>狀態</th><th>建議動作</th></tr></thead>
+      <tbody>
+        <tr><td>未受保護的資料表清單</td><td><span class="badge na">N/A — 資料表清單無法取得</span></td><td>授予 DB2MCP 存取 SYSCAT.TABLES 的 SELECT 權限後重新執行</td></tr>
+        <tr><td>GDP 分類政策觸發</td><td><span class="badge blocked">未執行－需授權</span></td><td>取得資料表清單後，授權執行 add_classifier_datasource + execute_cls_process</td></tr>
+        <tr><td>Log Source 覆蓋</td><td><span class="badge warning">PARTIAL — 4 個 ERROR</span></td><td>修復失聯的 Log Sources（WinCollect @ DC01、AS400Custom 等），確保稽核事件持續收集</td></tr>
+        <tr><td>ServerU Log Source</td><td><span class="badge na">DISABLED</span></td><td>確認是否需要重新啟用，或正式移除廢棄 Log Source</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

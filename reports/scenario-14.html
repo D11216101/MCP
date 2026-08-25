@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 14 — DB 活動 360° 每日報告</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:0}
+.stat-card{background:#F8FAFF;border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.stat-card .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.stat-card .value{font-size:20px;font-weight:700;color:#172B4D}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+@media(max-width:850px){.stat-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 14 — DB 活動 360° 每日報告</h1>
+      <p>觸發：每日排程 ｜ 報告日期：2026-08-25 ｜ 目標：ORDERDB (10.107.85.123) ｜ 發送對象：DBA + 資安團隊</p>
+    </div>
+  </div>
+</div>
+
+<!-- 關鍵指標 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>關鍵指標摘要</div>
+  <div class="section-body">
+    <div class="stat-grid">
+      <div class="stat-card"><div class="label">DB 連線數（當前）</div><div class="value">28</div></div>
+      <div class="stat-card"><div class="label">SYSCATSPACE 使用率</div><div class="value" style="color:#B42318">94.1%</div></div>
+      <div class="stat-card"><div class="label">QRadar OPEN Offense</div><div class="value" style="color:#B54708">7</div></div>
+      <div class="stat-card"><div class="label">GDP ATA 案件（24h）</div><div class="value" style="color:#475467">N/A</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 連線統計 -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>Db2 — 連線統計</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Auth ID</th><th>應用程式</th><th>連線數</th><th>狀態分布</th></tr></thead>
+      <tbody>
+        <tr><td>DB2MCP</td><td>db2jcc_application</td><td>15</td><td>CONNECTED ×13, UOWWAIT ×2</td></tr>
+        <tr><td>DB2MCP</td><td>python3</td><td>1</td><td>UOWEXEC ×1</td></tr>
+        <tr><td>DB2MCP</td><td>Db2 系統程序 (db2fw0~db2fw3, db2stmm 等)</td><td>11</td><td>CONNECTED</td></tr>
+        <tr><td>DB2INST1</td><td>db2evmg_DB2DETAILDEA</td><td>1</td><td>CONNECTED</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">全天活動報告（get_readonly_activity_report）及稽核摘要（get_audit_summary）：非標準 MCP 端點，無法直接取得；已改用 get_current_connections 提供當前連線快照。</p>
+  </div>
+</div>
+
+<!-- Top SQL -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>Db2 — Top SQL（慢查詢）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>get_active_sql</td>
+          <td><span class="badge na">N/A</span></td>
+          <td>SQL1224N (SQLSTATE=55032) — DB Manager 無法接受新請求，活躍 SQL 無法取得</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Tablespace -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>Db2 — Tablespace 使用率（每日快照）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Tablespace</th><th>類型</th><th>使用率</th><th>已用/總量（頁）</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>SYSCATSPACE</td><td>DMS</td><td>94.1%</td><td>30,824 / 32,768</td><td><span class="badge critical">CRITICAL</span></td></tr>
+        <tr><td>USERSPACE1</td><td>DMS</td><td>26.6%</td><td>2,176 / 8,192</td><td><span class="badge normal">NORMAL</span></td></tr>
+        <tr><td>SYSTOOLSPACE</td><td>DMS</td><td>1.9%</td><td>152 / 8,192</td><td><span class="badge normal">NORMAL</span></td></tr>
+        <tr><td>TEMPSPACE1</td><td>SMS</td><td>—</td><td>0</td><td><span class="badge normal">NORMAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Log -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>Db2 — Log 使用率</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>資料庫</th><th>Log 使用率</th><th>已用 (KB)</th><th>可用 (KB)</th><th>峰值 (KB)</th><th>Log Archive</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>ORDERDB</td><td>3.77%</td><td>3,845</td><td>98,054</td><td>5,271</td><td>OFF</td><td><span class="badge normal">NORMAL</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- GDP ATA -->
+<div class="section">
+  <div class="section-header"><span class="num">6</span>GDP — ATA 威脅案件（過去 24 小時）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢條件</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>get_ata_case_info(status=open, getCaseDetails=1)</td><td><span class="badge na">N/A</span></td><td>ErrorCode=3324 — API 執行失敗，無法取得 ATA 案件資料</td></tr>
+        <tr><td>get_ata_case_info(threatCategory=SQL Injection)</td><td><span class="badge normal">無案件</span></td><td>[] — 無 SQL Injection 案件</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- QRadar Offense -->
+<div class="section">
+  <div class="section-header"><span class="num">7</span>QRadar — 過去 24 小時 Offense 清單</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>ID</th><th>描述</th><th>嚴重度</th><th>事件數</th><th>最後更新</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>#194</td><td>Possible Shared Account containing Certificate validation</td><td><span class="badge warning">7</span></td><td>904</td><td>2026-08-25（epoch: 1787624073）</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#193</td><td>Possible Shared Account containing User Login</td><td><span class="badge critical">9</span></td><td>16</td><td>2026-08-04（epoch: 1786195623）</td><td><span class="badge critical">OPEN</span></td></tr>
+        <tr><td>#196</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>3</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#191</td><td>MITRE.WIN.T1529 System Shutdown/Reboot</td><td><span class="badge warning">6</span></td><td>10</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#192</td><td>MITRE.WIN.T1070.001 Indicator Removal on Host: Clear Logs</td><td><span class="badge warning">5</span></td><td>10</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#195</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>7</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
+        <tr><td>#190</td><td>Failure Audit: An account failed to log on</td><td>3</td><td>59</td><td>2026-08-04</td><td><span class="badge warning">OPEN</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 結論 -->
+<div class="section">
+  <div class="section-header"><span class="num">8</span>今日重點 &amp; 建議事項</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>優先度</th><th>問題</th><th>建議動作</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge critical">P1</span></td><td>SYSCATSPACE 94.1% — 即將耗盡</td><td>立即執行 ALTER TABLESPACE 擴充；確認 OS 磁碟空間後操作</td></tr>
+        <tr><td><span class="badge critical">P1</span></td><td>SQL1224N 反覆出現</td><td>排查 db2acd Health Monitor 設定；確認 DB Manager 是否需要重啟</td></tr>
+        <tr><td><span class="badge critical">P2</span></td><td>QRadar Offense #193 (severity=9) 持續 OPEN</td><td>調查 root 帳號共用行為；分配給資安分析師</td></tr>
+        <tr><td><span class="badge warning">P3</span></td><td>GDP ATA API 不可用 (ErrorCode=3324)</td><td>修復後重新確認無威脅案件</td></tr>
+        <tr><td><span class="badge warning">P3</span></td><td>Log Archive (logarchmeth1=OFF)</td><td>啟用 Log Archive 確保可恢復性</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

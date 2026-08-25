@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 10 — DB 漏洞評估自動報告</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+  --blocked-bg:#FFF6ED;--blocked-text:#C4320A;--blocked-border:#F9DBAF;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 10 — DB 漏洞評估自動報告</h1>
+      <p>觸發：週期性排程（週/月）或審計要求 ｜ 查詢時間：2026-08-25 12:38 UTC+8 ｜ 目標：ORDERDB (10.107.85.123)</p>
+    </div>
+  </div>
+</div>
+
+<!-- 整體摘要 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>步驟</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>GDP 安全評估 API (get_assessment_result)</td><td><span class="badge na">N/A</span></td><td>GDP Database Security Assessment 類別中無 get_assessment_result 端點；可用端點為 execute_assessment / get_va_summary_key / reset_va_summary</td></tr>
+        <tr><td>GDP 臨時評估 (create_ad_hoc_audit_for_security_assessment)</td><td><span class="badge na">N/A</span></td><td>此端點在目前 GDP API 類別中不存在；Security Assessment Builder 僅有 5 個端點</td></tr>
+        <tr><td>Db2 架構資訊</td><td><span class="badge normal">已取得</span></td><td>ORDERDB，DB2 v11.5.9.0，db2inst1@db2v1159rhel810</td></tr>
+        <tr><td>GDP 評估執行 (execute_assessment)</td><td><span class="badge blocked">未執行－需授權</span></td><td>修改操作，需指定 assessmentDescription 並授權執行</td></tr>
+        <tr><td>GDP 評估進度查詢 (get_assessment_scan_progress)</td><td><span class="badge na">N/A</span></td><td>此端點名稱在 GDP API 中不存在</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:11px 14px;background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:6px;font-size:13px;color:var(--warning-text)">
+      <strong>注意：</strong>GDP Database Security Assessment 類別的 API 端點集合與 Scenario 描述的呼叫不完全匹配（部分 API 名稱不存在）。已取得可用 DB 架構資訊；評估執行需授權。
+    </div>
+  </div>
+</div>
+
+<!-- Db2 架構 -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>Db2 — 資料庫架構資訊</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>項目</th><th>值</th></tr></thead>
+      <tbody>
+        <tr><td>資料庫名稱</td><td>ORDERDB</td></tr>
+        <tr><td>主機</td><td>10.107.85.123 : 50000</td></tr>
+        <tr><td>Hostname</td><td>db2v1159rhel810</td></tr>
+        <tr><td>Instance</td><td>db2inst1</td></tr>
+        <tr><td>DB2 版本</td><td>DB2 v11.5.9.0 (Service Level: s2310270807)</td></tr>
+        <tr><td>架構</td><td>64-bit Linux x86-64</td></tr>
+        <tr><td>Partitions</td><td>1（非分區）</td></tr>
+        <tr><td>自動維護 (auto_maint)</td><td>ON</td></tr>
+        <tr><td>自動資料備份 (auto_db_backup)</td><td>OFF ⚠</td></tr>
+        <tr><td>Log Archive (logarchmeth1)</td><td>OFF ⚠</td></tr>
+        <tr><td>HADR 設定</td><td>hadr_local_host = null（未設定 HADR）</td></tr>
+        <tr><td>Lock Timeout</td><td>-1（無限等待）⚠</td></tr>
+        <tr><td>Max Applications</td><td>40</td></tr>
+        <tr><td>Max Locks (%)</td><td>97%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 可用 GDP 端點 -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>GDP — Security Assessment 可用 API 端點</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>端點名稱</th><th>HTTP 方法</th><th>說明</th><th>可否自動執行</th></tr></thead>
+      <tbody>
+        <tr><td><code>execute_assessment</code></td><td>PUT</td><td>提交安全評估到執行佇列（需 assessmentDescription 參數）</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td><code>get_va_summary_key</code></td><td>GET</td><td>取得 VA 摘要金鑰</td><td><span class="badge na">未執行（本次不需要）</span></td></tr>
+        <tr><td><code>modify_va_summary_key</code></td><td>PUT</td><td>修改 VA 摘要金鑰設定</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td><code>reset_va_summary_by_id</code></td><td>PUT</td><td>依 summaryId 重置 VA 摘要</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td><code>reset_va_summary_by_key</code></td><td>PUT</td><td>依主機/服務/port 重置 VA 摘要</td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Scenario 描述的 <code>get_assessment_result</code> 與 <code>create_ad_hoc_audit_for_security_assessment</code> 端點名稱在目前 GDP 部署中不存在，標示 N/A。</p>
+  </div>
+</div>
+
+<!-- 已知設定風險 -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>漏洞評估 — 從 DB 架構識別的已知設定風險</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>風險項目</th><th>當前值</th><th>風險等級</th><th>建議修補</th></tr></thead>
+      <tbody>
+        <tr><td>Log Archive 已關閉 (logarchmeth1=OFF)</td><td>OFF</td><td><span class="badge critical">HIGH</span></td><td>啟用 Log Archive 以確保資料可恢復性</td></tr>
+        <tr><td>自動資料備份已關閉 (auto_db_backup=OFF)</td><td>OFF</td><td><span class="badge critical">HIGH</span></td><td>啟用自動備份或設定外部備份排程</td></tr>
+        <tr><td>Lock Timeout = -1（無限等待）</td><td>-1</td><td><span class="badge warning">MEDIUM</span></td><td>設定合理 locktimeout（建議 30-120 秒）防止永久鎖死</td></tr>
+        <tr><td>HADR 未設定</td><td>null</td><td><span class="badge warning">MEDIUM</span></td><td>評估是否需要高可用性設定</td></tr>
+        <tr><td>SYSCATSPACE 使用率 94.1%</td><td>94.1%</td><td><span class="badge critical">HIGH</span></td><td>立即擴充 SYSCATSPACE</td></tr>
+        <tr><td>Max Locks 設定 97%</td><td>97%</td><td><span class="badge warning">MEDIUM</span></td><td>97% 接近 escalation 閾值，建議評估調整</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 建議 -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>建議事項 / 結論</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>優先度</th><th>建議動作</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge critical">緊急</span></td><td>修復 GDP ATA API (ErrorCode=3324) 以確保完整安全評估資料可取得</td></tr>
+        <tr><td><span class="badge critical">緊急</span></td><td>啟用 Db2 Log Archive（logarchmeth1），確保災難恢復能力</td></tr>
+        <tr><td><span class="badge critical">緊急</span></td><td>擴充 SYSCATSPACE（94.1% 使用率）</td></tr>
+        <tr><td><span class="badge warning">高</span></td><td>啟用自動資料備份，或確認外部備份排程</td></tr>
+        <tr><td><span class="badge warning">高</span></td><td>設定合理 locktimeout 值（建議 30–120 秒）</td></tr>
+        <tr><td><span class="badge warning">中</span></td><td>授權執行 GDP execute_assessment 取得完整 VA 評估報告</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

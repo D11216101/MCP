@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 7 — 可疑帳號行為調查</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+  --blocked-bg:#FFF6ED;--blocked-text:#C4320A;--blocked-border:#F9DBAF;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 7 — 可疑帳號行為調查</h1>
+      <p>觸發：QRadar Offense 涉及帳號異常（大量失敗登入 / 可疑共用帳號）｜ 查詢時間：2026-08-25 12:38 UTC+8</p>
+    </div>
+  </div>
+</div>
+
+<!-- 摘要 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>調查維度</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>涉及帳號 Offense</td><td><span class="badge critical">3 筆 OPEN</span></td><td>Offense #193 (severity=9)、#195 (severity=3)、#190 (severity=3)</td></tr>
+        <tr><td>主要帳號</td><td><span class="badge critical">root</span></td><td>Offense #193：root 帳號從 3 個不同內網 IP 登入（可疑共用）</td></tr>
+        <tr><td>QRadar AQL 事件查詢（過去 24h）</td><td><span class="badge na">未執行</span></td><td>需具體帳號識別後建立 AQL 查詢</td></tr>
+        <tr><td>GDP ATA DB user 案件</td><td><span class="badge na">N/A</span></td><td>ATA API ErrorCode=3324，無法查詢</td></tr>
+        <tr><td>Db2 稽核操作記錄</td><td><span class="badge na">N/A</span></td><td>get_recent_audit_events 非標準 MCP 端點，需授權存取稽核視圖</td></tr>
+        <tr><td>GDP 帳號隔離 (create_quarantine_until)</td><td><span class="badge blocked">未執行－需授權</span></td><td>系統修改操作，需人工授權</td></tr>
+        <tr><td>QRadar Offense 更新 (update_offense)</td><td><span class="badge blocked">未執行－需授權</span></td><td>系統修改操作，需人工授權</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 涉及帳號 Offense -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>QRadar — 帳號相關 Offense 清單</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Offense ID</th><th>描述</th><th>嚴重度</th><th>事件數</th><th>來源帳號</th><th>來源 IP</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>#193</td>
+          <td>Possible Shared Account containing User Login</td>
+          <td><span class="badge critical">9</span></td>
+          <td>16</td>
+          <td><strong>root</strong></td>
+          <td>10.107.85.2, 10.107.85.4, 10.107.85.3</td>
+          <td><span class="badge critical">OPEN</span></td>
+        </tr>
+        <tr>
+          <td>#195</td>
+          <td>Failure Audit: An account failed to log on</td>
+          <td><span class="badge warning">3</span></td>
+          <td>7</td>
+          <td>—</td>
+          <td>::1 (loopback)</td>
+          <td><span class="badge warning">OPEN</span></td>
+        </tr>
+        <tr>
+          <td>#190</td>
+          <td>Failure Audit: An account failed to log on</td>
+          <td><span class="badge warning">3</span></td>
+          <td>59</td>
+          <td>—</td>
+          <td>::1 (loopback)</td>
+          <td><span class="badge warning">OPEN</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Offense #193 詳情 -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>QRadar — Offense #193 詳細資訊</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>欄位</th><th>值</th></tr></thead>
+      <tbody>
+        <tr><td>Offense ID</td><td>193</td></tr>
+        <tr><td>描述</td><td>Possible Shared Account containing User Login</td></tr>
+        <tr><td>嚴重度 / Magnitude</td><td>9 / 3</td></tr>
+        <tr><td>類別</td><td>SIM User Authentication、Suspicious Behavior</td></tr>
+        <tr><td>來源帳號（offense_source）</td><td><code>root</code></td></tr>
+        <tr><td>來源 IP 數量</td><td>3（10.107.85.2, 10.107.85.4, 10.107.85.3）</td></tr>
+        <tr><td>事件數</td><td>16</td></tr>
+        <tr><td>首次偵測時間</td><td>2026-08-04 (epoch: 1786195504511)</td></tr>
+        <tr><td>最後更新時間</td><td>2026-08-04 (epoch: 1786195623498)</td></tr>
+        <tr><td>Log Sources</td><td>Custom Rule Engine-8 :: siem-aio、SIM Audit-2 :: siem-aio</td></tr>
+        <tr><td>觸發規則</td><td>ID 119302 (CRE_RULE)</td></tr>
+        <tr><td>分配給分析師</td><td>—（未分配）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- AQL 與帳號事件 -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>QRadar AQL — 帳號 24h 事件查詢</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢</th><th>狀態</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>SELECT * FROM events WHERE username = 'root' LAST 24 HOURS</code></td>
+          <td><span class="badge na">未執行</span></td>
+          <td>已確認 root 帳號為調查目標，但考量查詢範圍需分析師確認後執行，避免誤觸大量事件</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">建議 AQL 語句（供分析師審核後執行）：<code>SELECT starttime, username, sourceip, eventcount, qidname, logsourcename FROM events WHERE username = 'root' START '2026-08-24 00:00:00' STOP '2026-08-25 23:59:59'</code></p>
+  </div>
+</div>
+
+<!-- GDP ATA -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>GDP — DB user ATA 案件查詢</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢條件</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>get_ata_case_info(getCaseDetails=1, status=open)</td><td><span class="badge na">N/A</span></td><td>ErrorCode=3324 — API 執行失敗，無法取得 DB user 相關案件</td></tr>
+        <tr><td>get_ata_case_info(threatCategory=SQL Injection)</td><td><span class="badge normal">空陣列</span></td><td>無 SQL Injection 案件</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Db2 稽核 -->
+<div class="section">
+  <div class="section-header"><span class="num">6</span>Db2 — 帳號稽核操作記錄</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>查詢項目</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>get_recent_audit_events(user_name=root)</td><td><span class="badge na">N/A</span></td><td>非標準 MCP 端點，需 Guardium 稽核報告或 db2audit 工具取得</td></tr>
+        <tr><td>get_audit_summary(user_name=root)</td><td><span class="badge na">N/A</span></td><td>同上</td></tr>
+        <tr><td>當前活躍連線（user=DB2MCP）</td><td>28 個連線</td><td>主要為 db2jcc_application；root 帳號未出現在當前 Db2 連線中</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 帳號行為時間線 -->
+<div class="section">
+  <div class="section-header"><span class="num">7</span>帳號行為時間線 &amp; 風險評分</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>時間</th><th>事件</th><th>帳號</th><th>來源 IP</th><th>類型</th></tr></thead>
+      <tbody>
+        <tr><td>2026-08-04（首次）</td><td>Possible Shared Account — User Login</td><td>root</td><td>10.107.85.2/4/3</td><td>Suspicious Behavior</td></tr>
+        <tr><td>持續中（16 events）</td><td>多 IP 共用同一帳號登入</td><td>root</td><td>3 個不同內網 IP</td><td>SIM User Authentication</td></tr>
+        <tr><td>持續中（66 events）</td><td>Failure Audit: account failed to log on</td><td>不明</td><td>::1 (loopback)</td><td>Authentication Failure</td></tr>
+        <tr><td>Db2 層稽核</td><td colspan="4"><span class="badge na">N/A — 需稽核視圖存取授權</span></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:14px">
+      <table>
+        <thead><tr><th>風險維度</th><th>評分</th><th>依據</th></tr></thead>
+        <tbody>
+          <tr><td>帳號共用風險</td><td><span class="badge critical">HIGH</span></td><td>root 帳號從 3 個不同 IP 登入，severity=9</td></tr>
+          <tr><td>登入失敗頻率</td><td><span class="badge warning">MEDIUM</span></td><td>66 次 failure audit (loopback)，可能為暴力破解</td></tr>
+          <tr><td>DB 層影響</td><td><span class="badge na">UNKNOWN</span></td><td>Db2 稽核資料不可取得</td></tr>
+          <tr><td>整體風險</td><td><span class="badge critical">HIGH — 需立即調查</span></td><td>root 共用帳號 + 高 severity Offense 持續 OPEN</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 建議 -->
+<div class="section">
+  <div class="section-header"><span class="num">8</span>建議動作 / 結論</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>建議動作</th><th>優先度</th><th>執行狀態</th></tr></thead>
+      <tbody>
+        <tr><td>立即調查 root 帳號是否為共用/遭入侵；確認 3 個來源 IP 身份</td><td><span class="badge critical">緊急</span></td><td>需人工執行</td></tr>
+        <tr><td>執行 AQL 查詢取得 root 帳號過去 24h 完整事件</td><td><span class="badge critical">緊急</span></td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td>修復 GDP ATA API (ErrorCode=3324)</td><td><span class="badge warning">高</span></td><td>需 GDP 管理員介入</td></tr>
+        <tr><td>若確認帳號遭入侵 → GDP 隔離 / QRadar Offense 關閉</td><td><span class="badge warning">高</span></td><td><span class="badge blocked">未執行－需授權</span></td></tr>
+        <tr><td>Db2 授予 DB2MCP 稽核視圖存取權限</td><td><span class="badge warning">中</span></td><td>需 DBA 執行</td></tr>
+        <tr><td>停用 root 共用帳號，改為個人帳號 + MFA</td><td><span class="badge warning">中</span></td><td>需政策決策</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

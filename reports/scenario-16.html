@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 16 — 跨層全棧事件時間線（Major Incident）</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+.timeline-item{display:flex;gap:14px;padding:10px 0;border-bottom:1px solid #EEF1F5}
+.timeline-item:last-child{border-bottom:none}
+.tl-time{min-width:180px;font-size:12px;color:var(--muted);font-family:Consolas,monospace;padding-top:2px}
+.tl-badge{min-width:80px}
+.tl-content{flex:1;font-size:13px}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 16 — 跨層全棧事件時間線（Major Incident）</h1>
+      <p>觸發：Major Incident 宣告，需要完整跨系統時間線供 RCA ｜ 查詢時間：2026-08-25 12:38 UTC+8 ｜ 覆蓋：QRadar + GDP + Instana + Liberty + MQ + Db2</p>
+    </div>
+  </div>
+</div>
+
+<!-- 資料來源狀態 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>各系統資料取得狀況</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>系統</th><th>查詢項目</th><th>狀態</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>QRadar</td><td>事件期間所有 Offense</td><td><span class="badge normal">已取得</span></td><td>7 個 OPEN Offense，含時間戳</td></tr>
+        <tr><td>GDP</td><td>事件期間 ATA 案件</td><td><span class="badge na">N/A</span></td><td>ATA API ErrorCode=3324，無法取得</td></tr>
+        <tr><td>Instana</td><td>事件期間所有 error events</td><td><span class="badge normal">已取得</span></td><td>3 個 Open events（severity 5–10），含時間戳</td></tr>
+        <tr><td>Liberty</td><td>應用狀態歷史 (get_metrics_summary)</td><td><span class="badge normal">已取得</span></td><td>快照資料（33 個 metric families，133 個 samples）</td></tr>
+        <tr><td>Db2</td><td>稽核事件與診斷日誌</td><td><span class="badge na">PARTIAL</span></td><td>db2diag 已取得（16 筆錯誤記錄）；get_recent_audit_events 非標準端點不可用</td></tr>
+        <tr><td>IBM MQ</td><td>QM 狀態 / 佇列歷史</td><td><span class="badge normal">已取得</span></td><td>當前狀態快照；歷史資料需 MQ Audit 設定</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 統一時間線 -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>跨系統統一事件時間線（依時間排序）</div>
+  <div class="section-body">
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-17 11:49 UTC+8</div>
+      <div class="tl-badge"><span class="badge warning">Db2</span></div>
+      <div class="tl-content"><strong>Db2 shmem attach 失敗</strong>（db2sysc / sqljcCommexitLogMessage，errno=2）— 共享記憶體區域無法附接，為早期告警訊號</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-17 16:12–16:13 UTC+8</div>
+      <div class="tl-badge"><span class="badge critical">Db2</span></div>
+      <div class="tl-content"><strong>SSL 憑證錯誤 ×4</strong>（DIA3604E: GSK_ERROR_BAD_CERT）— Db2 SSL socket setup 失敗，影響加密連線路徑（client IP: 127.0.0.1）</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-04 UTC+8（首次見到）</div>
+      <div class="tl-badge"><span class="badge critical">QRadar</span></div>
+      <div class="tl-content"><strong>Offense #193 建立</strong>（severity=9）— Possible Shared Account: root 帳號從 10.107.85.2/3/4 三個不同 IP 登入（SIM User Authentication + Suspicious Behavior）</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-04 UTC+8</div>
+      <div class="tl-badge"><span class="badge warning">QRadar</span></div>
+      <div class="tl-content"><strong>Offense #190–196 建立</strong>（severity 3–7）— 包括 MITRE T1529 System Shutdown/Reboot ×2、T1070.001 Clear Logs ×1、帳號登入失敗 ×2、Certificate validation 帳號共用 ×1</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-20 12:31 UTC+8</div>
+      <div class="tl-badge"><span class="badge critical">Db2</span></div>
+      <div class="tl-content"><strong>SQL1224N 首次出現</strong>（db2acd AutoStats / Health Monitor）— DB Manager 強制中斷請求 (SQLSTATE=55032)，影響自動統計更新與健康監控</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-20 13:11 UTC+8</div>
+      <div class="tl-badge"><span class="badge critical">Db2</span></div>
+      <div class="tl-content"><strong>hmonCheckAuthority 失敗</strong>（sqlcode=-1224）+ Error in disconnect — Db2 Health Monitor 完全失去連線，後續空間與健康狀態無法自動監控</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-22 22:21 UTC+8</div>
+      <div class="tl-badge"><span class="badge critical">Db2</span></div>
+      <div class="tl-content"><strong>SQL1224N 再次出現</strong>（hmonCheckAuthority error sqlRC=-1）— Health Monitor 再次確認失聯，問題持續</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">5 天前（~2026-08-20）</div>
+      <div class="tl-badge"><span class="badge warning">Instana</span></div>
+      <div class="tl-content"><strong>GC Activity High（20.52%）</strong>— Cassandra 4.1.11 ConcurrentMarkSweep GC 活動過高（severity=5），持續至今</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">4 天前（~2026-08-21）</div>
+      <div class="tl-badge"><span class="badge warning">Instana</span></div>
+      <div class="tl-content"><strong>System memory exhausted</strong>— localhost.localdomain 主機記憶體不足（severity=5），影響 memory.free/used/compUsed，持續至今</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-25 11:45 UTC+8（~53 分前）</div>
+      <div class="tl-badge"><span class="badge critical">Instana</span></div>
+      <div class="tl-content"><strong>Latency 告警觸發（severity=10）</strong>— mcp-test 規則：All Services application 的 calls 延遲超過預期最低值，影響 latency 指標，持續中</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-25 12:38 UTC+8（查詢時）</div>
+      <div class="tl-badge"><span class="badge normal">Liberty</span></div>
+      <div class="tl-content"><strong>Liberty 應用快照</strong>— liberty-dev: UP，3 個應用均 STARTED（mq-monitor-consumer / order-api / order-worker），Heap 1.6%，Thread Pool 正常</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">2026-08-25 12:38 UTC+8（查詢時）</div>
+      <div class="tl-badge"><span class="badge normal">IBM MQ</span></div>
+      <div class="tl-content"><strong>MQ 當前狀態</strong>— QM1/QM2 RUNNING；業務佇列 CURDEPTH=0；ORDERDEMO.SVRCONN ×2 RUNNING；Q1 積壓 4 則（39.8 天遺留）</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">GDP ATA 事件</div>
+      <div class="tl-badge"><span class="badge na">GDP</span></div>
+      <div class="tl-content"><span class="badge na">N/A</span> — ATA API ErrorCode=3324，無法取得 GDP 事件時間線</div>
+    </div>
+    <div class="timeline-item">
+      <div class="tl-time">Db2 稽核事件</div>
+      <div class="tl-badge"><span class="badge na">Db2</span></div>
+      <div class="tl-content"><span class="badge na">N/A</span> — get_recent_audit_events 非標準端點，需授權存取稽核視圖取得</div>
+    </div>
+  </div>
+</div>
+
+<!-- 跨層關聯分析 -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>跨層關聯分析</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>時間節點</th><th>跨層關聯</th><th>影響評估</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>2026-08-17</td>
+          <td>Db2 shmem 失敗 → SSL 憑證錯誤</td>
+          <td>早期 Db2 通訊問題訊號，未及時修復</td>
+        </tr>
+        <tr>
+          <td>2026-08-20</td>
+          <td>SQL1224N → Health Monitor 失聯 → SYSCATSPACE 無法自動告警</td>
+          <td>空間監控盲點形成，94.1% 無自動告警</td>
+        </tr>
+        <tr>
+          <td>2026-08-21–22</td>
+          <td>主機記憶體不足（Instana） → GC 活動高（Cassandra）</td>
+          <td>基礎設施層壓力上升，應用層延遲風險增加</td>
+        </tr>
+        <tr>
+          <td>2026-08-25</td>
+          <td>Instana latency 告警（severity=10） + Db2 SQL1224N</td>
+          <td>Db2 DB Manager 問題導致應用層 SQL 執行受阻，最終觸發 Instana latency 告警</td>
+        </tr>
+        <tr>
+          <td>持續</td>
+          <td>QRadar 7 個 OPEN Offense（含 root 帳號共用）+ GDP ATA 不可用</td>
+          <td>安全層面存在未解決的可疑行為，加上 GDP 監控盲點</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 各系統快照 -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>各層當前狀態快照</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>系統層</th><th>當前狀態</th><th>最關鍵問題</th></tr></thead>
+      <tbody>
+        <tr><td>QRadar SIEM</td><td><span class="badge critical">7 OPEN Offenses</span></td><td>severity=9 root 帳號共用，無人分配調查</td></tr>
+        <tr><td>GDP Guardium</td><td><span class="badge na">N/A（API 失效）</span></td><td>ATA 監控盲點，ErrorCode=3324 未修復</td></tr>
+        <tr><td>Instana APM</td><td><span class="badge critical">severity=10 latency</span></td><td>All Services latency 告警持續 ~53 分鐘</td></tr>
+        <tr><td>Liberty</td><td><span class="badge normal">UP / STARTED</span></td><td>Datasource 指標缺失，無法判斷連線池狀況</td></tr>
+        <tr><td>IBM MQ</td><td><span class="badge normal">RUNNING</span></td><td>Q1 遺留 4 則訊息（39.8 天），無消費者</td></tr>
+        <tr><td>Db2</td><td><span class="badge critical">SQL1224N + SYSCATSPACE 94.1%</span></td><td>最嚴重問題；DB Manager 狀態異常 + 空間即將耗盡</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 結論 -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>RCA 建議 &amp; 立即行動清單</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>優先度</th><th>根因</th><th>立即行動</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge critical">P0</span></td><td>Db2 SQL1224N — DB Manager 狀態異常</td><td>重啟 Db2 Health Monitor（db2acd）；確認 db2inst1 程序狀態</td></tr>
+        <tr><td><span class="badge critical">P0</span></td><td>SYSCATSPACE 94.1%</td><td>緊急擴充 SYSCATSPACE（確認 OS 磁碟後執行 ALTER TABLESPACE）</td></tr>
+        <tr><td><span class="badge critical">P1</span></td><td>Instana severity=10 latency 告警（All Services）</td><td>確認 mcp-test 規則是否誤觸；深入 trace 分析（需 applicationId 與時間範圍）</td></tr>
+        <tr><td><span class="badge critical">P1</span></td><td>QRadar Offense #193（root 帳號共用，severity=9）</td><td>分配給資安分析師；確認 root 帳號是否遭入侵；執行 AQL 查詢帳號歷史事件</td></tr>
+        <tr><td><span class="badge warning">P2</span></td><td>GDP ATA API ErrorCode=3324</td><td>修復 GDP REST API；重新確認無未發現的 ATA 威脅案件</td></tr>
+        <tr><td><span class="badge warning">P2</span></td><td>主機記憶體不足（持續 4 天）</td><td>擴充 localhost.localdomain 記憶體；評估是否影響 JVM 效能</td></tr>
+        <tr><td><span class="badge warning">P3</span></td><td>Db2 SSL 憑證錯誤</td><td>更換/重新簽發 Db2 SSL 憑證，修復加密連線路徑</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

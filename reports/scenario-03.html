@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Scenario 3 — 訊息積壓診斷</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --page:#F5F7FB;--card:#FFFFFF;--text:#1F2937;--muted:#667085;--border:#E4E7EC;
+  --brand:#2F6BFF;--brand-dark:#2447A8;--brand-soft:#EEF4FF;
+  --normal-bg:#ECFDF3;--normal-text:#027A48;--normal-border:#ABEFC6;
+  --warning-bg:#FFFAEB;--warning-text:#B54708;--warning-border:#FEDF89;
+  --critical-bg:#FEF3F2;--critical-text:#B42318;--critical-border:#FECDCA;
+  --na-bg:#F2F4F7;--na-text:#475467;--na-border:#D0D5DD;
+}
+body{font-family:"Segoe UI","Noto Sans TC",sans-serif;background:var(--page);color:var(--text);font-size:14px;font-weight:400;line-height:1.65}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:40px 24px 56px}
+.hero{background:#fff;border:1px solid var(--border);border-radius:10px;padding:28px;margin-bottom:22px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+.hero-row{display:flex;align-items:flex-start;gap:12px}
+.hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
+h1{font-size:28px;font-weight:700;line-height:1.25;letter-spacing:-.5px;color:#172B4D}
+.hero p{margin-top:8px;font-size:12px;color:var(--muted)}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px rgba(16,24,40,.03)}
+.section-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#F8FAFF;border-bottom:1px solid var(--border);border-left:4px solid var(--brand);font-size:15px;font-weight:700;color:#203864}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:700}
+.section-body{padding:20px;overflow-x:auto}
+table{width:100%;min-width:680px;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-size:13px}
+th{background:#F8FAFC;color:#475467;font-size:12px;font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #EEF1F5;vertical-align:middle;word-break:break-word}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:12px;font-size:11.5px;font-weight:600;border:1px solid transparent;white-space:nowrap}
+.normal{background:var(--normal-bg);color:var(--normal-text);border-color:var(--normal-border)}
+.warning{background:var(--warning-bg);color:var(--warning-text);border-color:var(--warning-border)}
+.critical{background:var(--critical-bg);color:var(--critical-text);border-color:var(--critical-border)}
+.na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
+code{font-family:Consolas,monospace;font-size:12px;background:#F6F8FA;color:#475467;padding:2px 5px;border-radius:4px}
+.blocked-box{margin-top:12px;padding:11px 14px;background:#FFF6ED;border:1px solid #F9DBAF;border-radius:6px;font-size:13px;color:#C4320A}
+footer{text-align:center;padding-top:18px;margin-top:36px;border-top:1px solid var(--border);color:#98A2B3;font-size:12px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+  <div class="hero-row">
+    <div class="hero-bar"></div>
+    <div>
+      <h1>Scenario 3 — 訊息積壓診斷</h1>
+      <p>觸發：MQ 監控告警，或 Instana 偵測到 consumer service 有問題 ｜ 查詢時間：2026-08-25 12:38 UTC+8 ｜ 目標：QM1 / liberty-dev</p>
+    </div>
+  </div>
+</div>
+
+<!-- 整體摘要 -->
+<div class="section">
+  <div class="section-header"><span class="num">1</span>整體狀態摘要</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>檢查項目</th><th>結果</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>QM 運行狀態</td><td><span class="badge normal">PASS</span></td><td>QM1、QM2 均 running</td></tr>
+        <tr><td>業務佇列積壓</td><td><span class="badge normal">PASS</span></td><td>ORDERDEMO.REQUEST.Q / ERROR.Q / BACKOUT.Q 深度均為 0</td></tr>
+        <tr><td>Q1 非業務佇列積壓</td><td><span class="badge warning">WARNING</span></td><td>Q1 CURDEPTH=4，最舊訊息 3,442,065 秒（約 39.8 天），無消費者</td></tr>
+        <tr><td>DLQ (Dead Letter Queue)</td><td><span class="badge na">N/A</span></td><td>AMQ8147E：DLQ 物件未定義於 QM1</td></tr>
+        <tr><td>Channel 狀態</td><td><span class="badge normal">PASS</span></td><td>ORDERDEMO.SVRCONN ×2 連線，STATUS=RUNNING</td></tr>
+        <tr><td>Liberty MQ Listener</td><td><span class="badge normal">PASS</span></td><td>mq-monitor-consumer 應用已 STARTED</td></tr>
+        <tr><td>Instana Consumer 錯誤率</td><td><span class="badge warning">WARNING</span></td><td>Instana 有 severity=10 latency 告警（All Services），需進一步確認是否與 MQ consumer 相關</td></tr>
+        <tr><td>Liberty 自動修復動作</td><td><span class="badge na">未執行－需授權</span></td><td>start_application 屬系統修改操作，本次未自動執行</td></tr>
+      </tbody>
+    </table>
+    <div class="blocked-box">
+      <strong>積壓根因研判：</strong>業務佇列（ORDERDEMO.REQUEST.Q 等）深度為 0，無實際積壓。Q1 有遺留訊息但無消費者，屬廢棄佇列疑慮而非業務積壓。MQ listener（mq-monitor-consumer）已運行，Channel 正常，Channel 斷線與 listener 停止均非本次問題根因。
+    </div>
+  </div>
+</div>
+
+<!-- QM 狀態 -->
+<div class="section">
+  <div class="section-header"><span class="num">2</span>IBM MQ — Queue Manager 狀態</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Queue Manager</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>QM1</td><td><span class="badge normal">RUNNING</span></td></tr>
+        <tr><td>QM2</td><td><span class="badge normal">RUNNING</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 佇列深度 -->
+<div class="section">
+  <div class="section-header"><span class="num">3</span>IBM MQ — 佇列深度 &amp; 狀態（業務佇列）</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>佇列名稱</th><th>CURDEPTH</th><th>IPPROCS（消費）</th><th>OPPROCS（寫入）</th><th>最後寫入</th><th>最舊訊息(秒)</th><th>監控</th><th>狀態</th></tr></thead>
+      <tbody>
+        <tr><td>ORDERDEMO.REQUEST.Q</td><td>0</td><td>2</td><td>1</td><td>2026-08-24 16:16</td><td>0</td><td>MEDIUM</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>ORDERDEMO.ERROR.Q</td><td>0</td><td>0</td><td>0</td><td>2026-08-17 13:36</td><td>0</td><td>MEDIUM</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>ORDERDEMO.BACKOUT.Q</td><td>0</td><td>0</td><td>0</td><td>—</td><td>0</td><td>MEDIUM</td><td><span class="badge normal">PASS</span></td></tr>
+        <tr><td>Q1</td><td><strong>4</strong></td><td>0</td><td>0</td><td>2026-07-17 10:06</td><td>3,442,065</td><td>HIGH</td><td><span class="badge warning">WARNING</span></td></tr>
+        <tr><td>SYSTEM.DEAD.LETTER.QUEUE</td><td>0</td><td>0</td><td>0</td><td>—</td><td>—</td><td>OFF</td><td><span class="badge normal">PASS</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Channel -->
+<div class="section">
+  <div class="section-header"><span class="num">4</span>IBM MQ — Channel 連線狀態</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>Channel 名稱</th><th>類型</th><th>連線來源</th><th>狀態</th><th>Sub-state</th></tr></thead>
+      <tbody>
+        <tr><td>ORDERDEMO.SVRCONN</td><td>SVRCONN</td><td>10.107.85.229</td><td><span class="badge normal">RUNNING</span></td><td>RECEIVE</td></tr>
+        <tr><td>ORDERDEMO.SVRCONN</td><td>SVRCONN</td><td>10.107.85.229</td><td><span class="badge normal">RUNNING</span></td><td>RECEIVE</td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">DLQ 查詢結果：AMQ8147E — DLQ 物件在 QM1 未定義，標示 N/A。</p>
+  </div>
+</div>
+
+<!-- Liberty -->
+<div class="section">
+  <div class="section-header"><span class="num">5</span>Liberty — MQ Listener 應用狀態</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>應用程式名稱</th><th>狀態</th><th>說明</th></tr></thead>
+      <tbody>
+        <tr><td>mq-monitor-consumer</td><td><span class="badge normal">STARTED</span></td><td>MQ listener 應用已啟動，無需重啟</td></tr>
+        <tr><td>order-api</td><td><span class="badge normal">STARTED</span></td><td>訂單 API 正常運行</td></tr>
+        <tr><td>order-worker</td><td><span class="badge normal">STARTED</span></td><td>訂單 Worker 正常運行</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;padding:11px 14px;background:#FFF6ED;border:1px solid #F9DBAF;border-radius:6px;font-size:13px;color:#C4320A">
+      <strong>自動修復動作（start_application）：未執行－需授權</strong>。因 listener 已 STARTED，本次無需重啟。如需重啟，請由授權人員執行。
+    </div>
+  </div>
+</div>
+
+<!-- Instana -->
+<div class="section">
+  <div class="section-header"><span class="num">6</span>Instana — Consumer Service 錯誤率</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>事件描述</th><th>嚴重度</th><th>影響實體</th><th>是否與 MQ Consumer 相關</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>mcp-test — Calls slower than expectation (latency min)</td>
+          <td><span class="badge critical">10</span></td>
+          <td>All Services (APPLICATION)</td>
+          <td>需進一步 Trace 分析確認；Instana get_all_traces 需具體 applicationId 與時間範圍才能執行</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:10px;font-size:12px;color:var(--muted)">Instana application metrics 詳細查詢（錯誤率 / throughput）需先取得有效 metric catalog，目前標示 <span class="badge na">PARTIAL</span>。</p>
+  </div>
+</div>
+
+<!-- 結論 -->
+<div class="section">
+  <div class="section-header"><span class="num">7</span>建議事項 / 結論</div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>項目</th><th>結論</th><th>建議動作</th></tr></thead>
+      <tbody>
+        <tr><td>業務佇列積壓</td><td><span class="badge normal">無積壓</span></td><td>無需動作</td></tr>
+        <tr><td>Q1 遺留訊息</td><td><span class="badge warning">需確認</span></td><td>確認 Q1 是否為廢棄佇列；如是，清除訊息或刪除佇列</td></tr>
+        <tr><td>DLQ 未定義</td><td><span class="badge warning">需設定</span></td><td>在 QM1 定義 DLQ（建議命名 SYSTEM.DEAD.LETTER.QUEUE 並設定於 QM 屬性）</td></tr>
+        <tr><td>MQ listener 狀態</td><td><span class="badge normal">已啟動</span></td><td>無需重啟</td></tr>
+        <tr><td>Instana latency 告警</td><td><span class="badge critical">需調查</span></td><td>深入 All Services trace 確認是否與 MQ consumer 相關</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>
