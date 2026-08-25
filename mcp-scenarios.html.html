@@ -1,0 +1,549 @@
+
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<title>MCP 整合情境全覽</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:14px;line-height:1.6;color:#1f2328;background:#fff;padding:24px 16px 56px}
+.container{max-width:760px;margin:0 auto}
+h1{font-size:21px;font-weight:700;margin-bottom:4px}
+.lead{color:#57606a;font-size:13px;margin-bottom:28px}
+h2{font-size:15px;font-weight:700;margin:32px 0 10px;padding-bottom:5px;border-bottom:2px solid #e5e7eb;display:flex;align-items:center;gap:8px}
+h3{font-size:13px;font-weight:600;margin:18px 0 6px;color:#1f2328}
+
+/* 情境卡 */
+.scenario-card{border:1px solid #e5e7eb;border-radius:8px;margin-bottom:18px;overflow:hidden}
+.sc-header{padding:11px 15px;display:flex;align-items:flex-start;gap:10px;border-bottom:1px solid #e5e7eb}
+.sc-num{font-size:11px;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;margin-top:1px}
+.sc-title{font-size:14px;font-weight:600;margin-bottom:3px}
+.sc-when{font-size:12px;color:#57606a}
+.sc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-left:auto;padding-left:8px;flex-shrink:0}
+.tag{font-size:11px;font-weight:500;padding:1px 7px;border-radius:10px;white-space:nowrap}
+.tq{background:#fde8d0;color:#7d3800}
+.ti{background:#d0e8fd;color:#003a7d}
+.tg{background:#fce8f3;color:#6b0039}
+.tl{background:#ede0fd;color:#3e006b}
+.td{background:#e0f0fd;color:#003e7d}
+.tm{background:#fdf5d0;color:#5e4a00}
+.sc-body{padding:12px 15px}
+.flow-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.step-badge{font-size:11px;font-weight:700;min-width:20px;height:20px;background:#f0f1f3;border:1px solid #e5e7eb;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#57606a;margin-top:2px}
+.flow-text{font-size:13px}
+.flow-text strong{color:#1f2328}
+.flow-text .mcp-call{font-size:11px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:3px;padding:1px 5px;font-family:monospace;color:#57606a;margin-left:3px;white-space:nowrap}
+.flow-text .mcp-call.gdp{border-color:#d0a0e0;color:#6b0039;background:#fef5ff}
+.flow-text .mcp-call.qr{border-color:#f0c090;color:#7d3800;background:#fffaf5}
+.flow-text .mcp-call.ins{border-color:#90c0f0;color:#003a7d;background:#f5fbff}
+.flow-text .mcp-call.lib{border-color:#c0a0f0;color:#3e006b;background:#fdf5ff}
+.flow-text .mcp-call.db2{border-color:#90c0f0;color:#003e7d;background:#f5faff}
+.flow-text .mcp-call.mq{border-color:#e0d090;color:#5e4a00;background:#fffdf0}
+.divider{border:none;border-top:1px dashed #e5e7eb;margin:8px 0}
+.output-row{font-size:12px;color:#57606a;margin-top:4px}
+.output-row strong{color:#1f2328}
+
+/* 架構 section */
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.arch-card{border:1px solid #e5e7eb;border-radius:6px;padding:12px 14px}
+.arch-card h4{font-size:13px;font-weight:600;margin-bottom:6px;border-bottom:1px solid #f0f1f3;padding-bottom:4px}
+.arch-card ul{list-style:none;padding:0}
+.arch-card ul li{font-size:12px;color:#57606a;padding:2px 0;display:flex;gap:6px;align-items:flex-start}
+.arch-card ul li::before{content:"·";color:#3b82d4;font-weight:700;flex-shrink:0}
+
+/* 觸發矩陣 */
+.trigger-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.trigger-table th{background:#f7f8fa;padding:6px 8px;border:1px solid #e5e7eb;font-weight:600;text-align:left;font-size:11px}
+.trigger-table td{padding:6px 8px;border:1px solid #e5e7eb;vertical-align:top}
+.trigger-table td:first-child{font-weight:500;white-space:nowrap}
+.pill-row{display:flex;flex-wrap:wrap;gap:3px}
+.spill{font-size:11px;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:3px;padding:1px 6px;color:#57606a}
+
+/* 顏色分組 */
+.cat-ops{background:#fdf5d0;border-color:#e8d490;color:#5e3a00}
+.cat-sec{background:#fde8e8;border-color:#e8b0b0;color:#7d0000}
+.cat-comp{background:#e8f0fd;border-color:#b0c8e8;color:#003060}
+.cat-db{background:#f0e8fd;border-color:#c8b0e8;color:#3c006b}
+.cat-exp{background:#e8fdf0;border-color:#b0e8c8;color:#005030}
+
+footer{text-align:center;font-size:12px;color:#57606a;border-top:1px solid #e5e7eb;padding-top:16px;margin-top:36px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>MCP 整合情境全覽</h1>
+<p class="lead">7 個 MCP Server 共可組合出 5 大類、16 個可落地的整合情境，以下依使用目的分類說明觸發條件、調用順序與程式架構</p>
+
+
+<h2>▍整合情境總覽</h2>
+<table class="trigger-table">
+<thead>
+  <tr><th>類別</th><th>情境名稱</th><th>核心 MCP 組合</th><th>觸發方式</th></tr>
+</thead>
+<tbody>
+  <tr>
+    <td rowspan="4" style="background:#fdf5f0;font-weight:600;color:#7d3000">維運<br />Operations</td>
+    <td>1. 部署後例行健康檢查</td>
+    <td><div class="pill-row"><span class="spill">Instana</span><span class="spill">Liberty</span><span class="spill">IBM MQ</span><span class="spill">Db2</span><span class="spill">GDP</span></div></td>
+    <td>CI/CD 完成後自動觸發</td>
+  </tr>
+  <tr>
+    <td>2. 服務效能劣化根因分析</td>
+    <td><div class="pill-row"><span class="spill">Instana</span><span class="spill">Liberty</span><span class="spill">Db2</span></div></td>
+    <td>P99 latency 超過閾值</td>
+  </tr>
+  <tr>
+    <td>3. 訊息積壓診斷</td>
+    <td><div class="pill-row"><span class="spill">Instana</span><span class="spill">IBM MQ</span><span class="spill">Liberty</span></div></td>
+    <td>MQ 佇列深度告警</td>
+  </tr>
+  <tr>
+    <td>4. 應用程式 OOM / 崩潰</td>
+    <td><div class="pill-row"><span class="spill">Instana</span><span class="spill">Liberty</span></div></td>
+    <td>Liberty Health = DOWN</td>
+  </tr>
+  <tr>
+    <td rowspan="4" style="background:#fde8e8;font-weight:600;color:#7d0000">資安<br />Security</td>
+    <td>5. 資料庫異常存取調查</td>
+    <td><div class="pill-row"><span class="spill">GDP</span><span class="spill">QRadar</span><span class="spill">Db2</span></div></td>
+    <td>GDP ATA 案件 / QRadar Offense</td>
+  </tr>
+  <tr>
+    <td>6. SQL 注入偵測與阻斷</td>
+    <td><div class="pill-row"><span class="spill">GDP</span><span class="spill">QRadar</span><span class="spill">Instana</span></div></td>
+    <td>GDP 威脅類別 = SQL Injection</td>
+  </tr>
+  <tr>
+    <td>7. 可疑帳號行為調查</td>
+    <td><div class="pill-row"><span class="spill">QRadar</span><span class="spill">GDP</span><span class="spill">Db2</span></div></td>
+    <td>QRadar 帳號相關 Offense</td>
+  </tr>
+  <tr>
+    <td>8. 攻擊來源追溯</td>
+    <td><div class="pill-row"><span class="spill">QRadar</span><span class="spill">GDP</span></div></td>
+    <td>高嚴重度 Offense (severity ≥ 8)</td>
+  </tr>
+  <tr>
+    <td rowspan="3" style="background:#e8f0fd;font-weight:600;color:#003060">合規<br />Compliance</td>
+    <td>9. 部署前合規 Checklist</td>
+    <td><div class="pill-row"><span class="spill">GDP</span><span class="spill">QRadar</span><span class="spill">Db2</span></div></td>
+    <td>部署 Pipeline 前置門禁</td>
+  </tr>
+  <tr>
+    <td>10. DB 漏洞評估報告</td>
+    <td><div class="pill-row"><span class="spill">GDP</span><span class="spill">Db2</span></div></td>
+    <td>週期性排程 / 審計要求</td>
+  </tr>
+  <tr>
+    <td>11. 敏感資料分類稽核</td>
+    <td><div class="pill-row"><span class="spill">GDP</span><span class="spill">Db2</span><span class="spill">QRadar</span></div></td>
+    <td>新 schema 上線 / 定期審查</td>
+  </tr>
+  <tr>
+    <td rowspan="3" style="background:#f0e8fd;font-weight:600;color:#3c006b">資料庫<br />Database</td>
+    <td>12. DB 效能問題診斷</td>
+    <td><div class="pill-row"><span class="spill">Db2</span><span class="spill">Liberty</span><span class="spill">Instana</span></div></td>
+    <td>Db2 慢查詢 / lock wait 告警</td>
+  </tr>
+  <tr>
+    <td>13. Tablespace 空間預警</td>
+    <td><div class="pill-row"><span class="spill">Db2</span><span class="spill">Instana</span></div></td>
+    <td>Tablespace 使用率 &gt; 80%</td>
+  </tr>
+  <tr>
+    <td>14. DB 活動 360° 報告</td>
+    <td><div class="pill-row"><span class="spill">Db2</span><span class="spill">GDP</span><span class="spill">QRadar</span></div></td>
+    <td>每日排程 / 主管要求</td>
+  </tr>
+  <tr>
+    <td rowspan="2" style="background:#e8fdf0;font-weight:600;color:#005030">體驗<br />Experience</td>
+    <td>15. SLO 燃盡緊急回應</td>
+    <td><div class="pill-row"><span class="spill">Instana</span><span class="spill">Liberty</span><span class="spill">Db2</span><span class="spill">IBM MQ</span></div></td>
+    <td>SLO burn rate 超過 2x</td>
+  </tr>
+  <tr>
+    <td>16. 跨層全棧事件時間線</td>
+    <td><div class="pill-row"><span class="spill">全部</span></div></td>
+    <td>Major Incident 宣告</td>
+  </tr>
+</tbody>
+</table>
+
+
+<h2><span style="background:#fde8d0;color:#7d3800;padding:2px 10px;border-radius:12px;font-size:13px">維運 Operations</span></h2>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fffaf5">
+    <div class="sc-num" style="background:#e67e22">1</div>
+    <div>
+      <div class="sc-title">部署後例行健康檢查</div>
+      <div class="sc-when">觸發：CI/CD pipeline 完成後自動呼叫 → 產出 Pass/Fail 報告，決定是否回滾</div>
+    </div>
+    <div class="sc-tags"><span class="tag ti">Instana</span><span class="tag tl">Liberty</span><span class="tag tm">MQ</span><span class="tag td">Db2</span><span class="tag tg">GDP</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>GDP</strong> — 確認 S-TAP 在線、監控政策已安裝<span class="mcp-call gdp">list_staps</span><span class="mcp-call gdp">list_installed_policies</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Instana</strong> — 取得整體健康摘要與新增問題<span class="mcp-call ins">get_health_summary</span><span class="mcp-call ins">list_open_issues</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Liberty</strong> — 確認應用 STARTED、JVM / Thread Pool 正常<span class="mcp-call lib">get_application_details</span><span class="mcp-call lib">get_jvm_summary</span><span class="mcp-call lib">get_threadpool_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>IBM MQ</strong> — 確認 QM 運行，主要佇列無積壓<span class="mcp-call mq">dspmq</span><span class="mcp-call mq">runmqsc: DISPLAY QSTATUS</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text"><strong>Db2</strong> — 確認連線正常、Tablespace 空間充足<span class="mcp-call db2">health_check</span><span class="mcp-call db2">get_tablespace_usage</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>各項 Pass/Fail 清單 + 彙總結論，可直接回傳給 CI/CD webhook</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fffaf5">
+    <div class="sc-num" style="background:#e67e22">2</div>
+    <div>
+      <div class="sc-title">服務效能劣化根因分析</div>
+      <div class="sc-when">觸發：Instana 告警 — P99 latency 或 errRate 超過閾值</div>
+    </div>
+    <div class="sc-tags"><span class="tag ti">Instana</span><span class="tag tl">Liberty</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Instana</strong> — 找錯誤 Span，取 trace_id<span class="mcp-call ins">search_spans(error_only=true)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Instana</strong> — 展開呼叫鏈，定位最先失敗的 span 與服務<span class="mcp-call ins">get_trace(trace_id)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3a</div><div class="flow-text">若失敗點在 Liberty → <strong>Liberty</strong> 確認 datasource / thread pool<span class="mcp-call lib">get_datasource_summary</span><span class="mcp-call lib">get_threadpool_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">3b</div><div class="flow-text">若失敗點在 Db2 → <strong>Db2</strong> 找慢 SQL 與鎖定<span class="mcp-call db2">get_active_sql</span><span class="mcp-call db2">get_db2_runtime(locks)</span><span class="mcp-call db2">read_db2diag</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>根因層（Liberty/DB）+ 具體錯誤描述 + 建議修復動作</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fffaf5">
+    <div class="sc-num" style="background:#e67e22">3</div>
+    <div>
+      <div class="sc-title">訊息積壓診斷</div>
+      <div class="sc-when">觸發：MQ 監控告警，或 Instana 偵測到 consumer service 有問題</div>
+    </div>
+    <div class="sc-tags"><span class="tag ti">Instana</span><span class="tag tm">MQ</span><span class="tag tl">Liberty</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>IBM MQ</strong> — 確認 QM 狀態與各佇列深度<span class="mcp-call mq">dspmq</span><span class="mcp-call mq">runmqsc: DISPLAY QSTATUS(*)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>IBM MQ</strong> — 確認 Channel 連線 + DLQ 深度<span class="mcp-call mq">runmqsc: DISPLAY CHSTATUS(*)</span><span class="mcp-call mq">runmqsc: DISPLAY QLOCAL(DLQ)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Liberty</strong> — 確認 MQ listener application 是否 STARTED<span class="mcp-call lib">list_applications</span><span class="mcp-call lib">get_application_details</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Instana</strong> — 確認 consumer service 的錯誤率<span class="mcp-call ins">get_application_metrics</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text">若 listener 已停止 → <strong>Liberty</strong> 重啟<span class="mcp-call lib">start_application</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>積壓根因（listener 停止 / channel 斷線 / consumer 錯誤）+ 自動修復結果</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fffaf5">
+    <div class="sc-num" style="background:#e67e22">4</div>
+    <div>
+      <div class="sc-title">應用程式 OOM / 崩潰處理</div>
+      <div class="sc-when">觸發：Liberty health = DOWN，或 Instana 偵測 pod restart</div>
+    </div>
+    <div class="sc-tags"><span class="tag ti">Instana</span><span class="tag tl">Liberty</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Liberty</strong> — 確認伺服器狀態與 JVM 記憶體<span class="mcp-call lib">get_server_status</span><span class="mcp-call lib">get_jvm_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Instana</strong> — 確認 JVM heap / GC 趨勢，是否有 OOM 前兆<span class="mcp-call ins">analyze_infrastructure (entity=jvm)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Liberty</strong> — 取得 JMX MBean 詳細記憶體資訊<span class="mcp-call lib">query_liberty_mbeans(contains=[Memory])</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text">必要時重啟應用並記錄 SLO 衝擊<span class="mcp-call lib">restart_application</span><span class="mcp-call ins">manage_slo(report)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>崩潰原因（OOM / GC overhead / 設定不足）+ heap 使用趨勢 + 重啟記錄</div>
+  </div>
+</div>
+
+
+<h2><span style="background:#fde8e8;color:#7d0000;padding:2px 10px;border-radius:12px;font-size:13px">資安 Security</span></h2>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fff8f8">
+    <div class="sc-num" style="background:#c0392b">5</div>
+    <div>
+      <div class="sc-title">資料庫異常存取調查</div>
+      <div class="sc-when">觸發：GDP ATA 案件新增，或 QRadar 有 DB 相關 High Offense</div>
+    </div>
+    <div class="sc-tags"><span class="tag tg">GDP</span><span class="tag tq">QRadar</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>GDP</strong> — 取得 ATA 案件詳情（威脅類別、DB user、時間）<span class="mcp-call gdp">get_ata_case_info(status=Open, getCaseDetails=1)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Db2</strong> — 查同時段稽核事件（DDL / 高權限）<span class="mcp-call db2">get_recent_audit_events(event_category=DDL)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>QRadar</strong> — AQL 查詢同時段相關 IP / 帳號的完整事件<span class="mcp-call qr">validate_aql → create_ariel_search</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>QRadar</strong> — 對來源 IP 做地理定位與 WHOIS<span class="mcp-call qr">geolocate_ip</span><span class="mcp-call qr">whois_lookup</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text"><strong>GDP</strong> — 若確認惡意帳號，立即隔離<span class="mcp-call gdp">create_quarantine_until</span></div></div>
+    <div class="flow-row"><div class="step-badge">6</div><div class="flow-text"><strong>QRadar</strong> — 更新 Offense 備注，記錄完整根因<span class="mcp-call qr">add_offense_note</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>攻擊時間線、受影響資料表、帳號隔離記錄、IP 地理資訊</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fff8f8">
+    <div class="sc-num" style="background:#c0392b">6</div>
+    <div>
+      <div class="sc-title">SQL 注入偵測與即時阻斷</div>
+      <div class="sc-when">觸發：GDP ATA threatCategory = SQL Injection（任意子類型）</div>
+    </div>
+    <div class="sc-tags"><span class="tag tg">GDP</span><span class="tag tq">QRadar</span><span class="tag ti">Instana</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>GDP</strong> — 取得 SQL Injection 案件（含詳細 SQL 語句）<span class="mcp-call gdp">get_ata_case_info(threatCategory=SQL Injection, getCaseDetails=1)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Instana</strong> — 找出對應的 error trace，確認影響範圍<span class="mcp-call ins">search_spans(error_only=true)</span><span class="mcp-call ins">get_trace</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>QRadar</strong> — 查詢 log source 同時段事件，確認進入點<span class="mcp-call qr">create_ariel_search</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>GDP</strong> — 立即阻斷惡意 DB 帳號 + 通知安全團隊<span class="mcp-call gdp">create_quarantine_until</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text"><strong>QRadar</strong> — 將惡意 IP 加入 Reference Set 黑名單<span class="mcp-call qr">add_to_reference_set</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>注入的 SQL 語句、進入點 API、受影響資料、已執行阻斷動作清單</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fff8f8">
+    <div class="sc-num" style="background:#c0392b">7</div>
+    <div>
+      <div class="sc-title">可疑帳號行為調查</div>
+      <div class="sc-when">觸發：QRadar Offense 類型涉及帳號異常（大量失敗登入 / 非工時存取）</div>
+    </div>
+    <div class="sc-tags"><span class="tag tq">QRadar</span><span class="tag tg">GDP</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>QRadar</strong> — 取得 Offense 詳情，找出涉及帳號<span class="mcp-call qr">get_offense(offense_id)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>QRadar</strong> — AQL 查詢該帳號過去 24h 所有事件<span class="mcp-call qr">create_ariel_search</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>GDP</strong> — 查該 DB user 的 ATA 案件<span class="mcp-call gdp">get_ata_case_info(dbUser=xxx, getCaseDetails=1)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Db2</strong> — 查該帳號的稽核操作記錄<span class="mcp-call db2">get_recent_audit_events(user_name=xxx)</span><span class="mcp-call db2">get_audit_summary(user_name=xxx)</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text">綜合判斷後 → 隔離帳號 / 關閉 Offense / 升級事件<span class="mcp-call gdp">create_quarantine_until</span><span class="mcp-call qr">update_offense</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>帳號行為時間線、存取了哪些資料庫物件、風險評分與建議動作</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fff8f8">
+    <div class="sc-num" style="background:#c0392b">8</div>
+    <div>
+      <div class="sc-title">攻擊來源追溯（IP 情報）</div>
+      <div class="sc-when">觸發：QRadar Offense severity ≥ 8，或有外部 IP 存取 DB</div>
+    </div>
+    <div class="sc-tags"><span class="tag tq">QRadar</span><span class="tag tg">GDP</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>QRadar</strong> — 列出所有高嚴重度 Offense 的來源 IP<span class="mcp-call qr">list_source_addresses</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>QRadar</strong> — 地理定位 + DNS + WHOIS 全查<span class="mcp-call qr">geolocate_ip</span><span class="mcp-call qr">dns_lookup → get_dns_result</span><span class="mcp-call qr">whois_lookup → get_whois_result</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>GDP</strong> — 確認該 IP 是否曾觸發 ATA 案件<span class="mcp-call gdp">get_ata_case_info</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>QRadar</strong> — 加入黑名單 Reference Set，後續自動封鎖<span class="mcp-call qr">add_to_reference_set</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>IP 地理 / 組織 / ASN 資訊、是否已知惡意、封鎖操作記錄</div>
+  </div>
+</div>
+
+
+<h2><span style="background:#e8f0fd;color:#003060;padding:2px 10px;border-radius:12px;font-size:13px">合規 Compliance</span></h2>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#f8fbff">
+    <div class="sc-num" style="background:#2980b9">9</div>
+    <div>
+      <div class="sc-title">部署前合規 Checklist（Gate Check）</div>
+      <div class="sc-when">觸發：CI/CD Pipeline 的 Pre-deploy 階段，任一失敗即阻止部署</div>
+    </div>
+    <div class="sc-tags"><span class="tag tg">GDP</span><span class="tag tq">QRadar</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>GDP</strong> — 確認目標 DB 已有 S-TAP 且為 Active<span class="mcp-call gdp">list_staps(onlyActive=1)</span></div></div>
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>GDP</strong> — 確認監控政策已安裝<span class="mcp-call gdp">list_installed_policies</span></div></div>
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>GDP</strong> — 確認無 Open 狀態的高嚴重度 ATA 案件<span class="mcp-call gdp">get_ata_case_info(status=Open, severity=high)</span></div></div>
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>QRadar</strong> — 確認無與目標系統相關的 OPEN Offense<span class="mcp-call qr">list_offenses(filter=status=OPEN)</span></div></div>
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>Db2</strong> — 確認 Tablespace 空間充足（&lt; 80%）<span class="mcp-call db2">get_tablespace_usage</span></div></div>
+    <div class="flow-row"><div class="step-badge">✓</div><div class="flow-text"><strong>Db2</strong> — 確認無 active lock wait / long-running transaction<span class="mcp-call db2">get_db2_runtime(locks)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>結構化 JSON Checklist（每項 pass/fail + 原因），回傳給 CI/CD 決定 GO / NO-GO</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#f8fbff">
+    <div class="sc-num" style="background:#2980b9">10</div>
+    <div>
+      <div class="sc-title">DB 漏洞評估自動報告</div>
+      <div class="sc-when">觸發：週期性排程（週/月）或審計要求</div>
+    </div>
+    <div class="sc-tags"><span class="tag tg">GDP</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>GDP</strong> — 列出所有已設定的安全評估<span class="mcp-call gdp">get_assessment_result</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>GDP</strong> — 對新 Datasource 建立臨時評估並執行<span class="mcp-call gdp">create_ad_hoc_audit_for_security_assessment</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Db2</strong> — 補充 DB 架構資訊（版本、實例）<span class="mcp-call db2">get_db2_architecture</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>GDP</strong> — 查詢評估完成狀態<span class="mcp-call gdp">get_assessment_scan_progress</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>漏洞清單（高/中/低 risk）、受影響 DB 物件、建議修補動作</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#f8fbff">
+    <div class="sc-num" style="background:#2980b9">11</div>
+    <div>
+      <div class="sc-title">敏感資料分類稽核</div>
+      <div class="sc-when">觸發：新 schema/table 上線，或定期 PII / 敏感資料清查</div>
+    </div>
+    <div class="sc-tags"><span class="tag tg">GDP</span><span class="tag td">Db2</span><span class="tag tq">QRadar</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Db2</strong> — 列出新 schema 下的所有資料表<span class="mcp-call db2">list_tables(schema_name=xxx)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>GDP</strong> — 確認資料分類政策是否覆蓋這些表<span class="mcp-call gdp">list_classifier_process</span><span class="mcp-call gdp">list_classifier_policy</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>GDP</strong> — 若未覆蓋，加入 Datasource 並觸發分類<span class="mcp-call gdp">add_classifier_datasource</span><span class="mcp-call gdp">execute_cls_process</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>QRadar</strong> — 確認對應的 Log Source 有收集到 audit event<span class="mcp-call qr">list_log_sources</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>未受保護的資料表清單、已觸發分類的結果、Log Source 覆蓋狀況</div>
+  </div>
+</div>
+
+
+<h2><span style="background:#f0e8fd;color:#3c006b;padding:2px 10px;border-radius:12px;font-size:13px">資料庫 Database</span></h2>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fdf8ff">
+    <div class="sc-num" style="background:#7c5cd8">12</div>
+    <div>
+      <div class="sc-title">DB 效能問題診斷</div>
+      <div class="sc-when">觸發：Db2 lock wait 或 log 使用率告警，或 Liberty datasource wait time 飆升</div>
+    </div>
+    <div class="sc-tags"><span class="tag td">Db2</span><span class="tag tl">Liberty</span><span class="tag ti">Instana</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Liberty</strong> — 確認 datasource 等待時間與連線數<span class="mcp-call lib">get_datasource_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Db2</strong> — 找出當前執行中的慢 SQL<span class="mcp-call db2">get_active_sql</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Db2</strong> — 確認 lock 情況與 transaction 狀態<span class="mcp-call db2">get_db2_runtime(locks)</span><span class="mcp-call db2">get_db2_runtime(transactions)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Db2</strong> — 讀取 db2diag 找 SQLCODE 錯誤<span class="mcp-call db2">read_db2diag(level=error, hours=2)</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text"><strong>Instana</strong> — 確認 DB span 的 P99 latency 趨勢<span class="mcp-call ins">manage_applications(metrics)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>慢 SQL 語句、lock holder / waiter 關係圖、SQLCODE 錯誤、優化建議</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fdf8ff">
+    <div class="sc-num" style="background:#7c5cd8">13</div>
+    <div>
+      <div class="sc-title">Tablespace 空間預警處理</div>
+      <div class="sc-when">觸發：Tablespace 使用率 &gt; 80%，或 db2diag 出現 SQL0289N</div>
+    </div>
+    <div class="sc-tags"><span class="tag td">Db2</span><span class="tag ti">Instana</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Db2</strong> — 取得所有 Tablespace 使用率<span class="mcp-call db2">get_tablespace_usage</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Db2</strong> — 確認 storage paths 剩餘空間<span class="mcp-call db2">get_db2_runtime(storagepaths)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Db2</strong> — 查 diag 確認是否已有寫入失敗錯誤<span class="mcp-call db2">read_db2diag(level=error)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Instana</strong> — 建立 SLO correction window 避免誤報<span class="mcp-call ins">manage_maintenance_windows(create)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>各 Tablespace 使用率、預估耗盡時間、緊急擴充建議</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#fdf8ff">
+    <div class="sc-num" style="background:#7c5cd8">14</div>
+    <div>
+      <div class="sc-title">DB 活動 360° 每日報告</div>
+      <div class="sc-when">觸發：每日排程（凌晨 1 點）自動產生，發送給 DBA + 資安團隊</div>
+    </div>
+    <div class="sc-tags"><span class="tag td">Db2</span><span class="tag tg">GDP</span><span class="tag tq">QRadar</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Db2</strong> — 取得全天活動報告<span class="mcp-call db2">get_readonly_activity_report(hours=24)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Db2</strong> — 取得稽核摘要（依使用者 / 操作類型）<span class="mcp-call db2">get_audit_summary(hours=24)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>GDP</strong> — 取得過去 24h ATA 案件<span class="mcp-call gdp">get_ata_case_info(periodStart=yesterday)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>QRadar</strong> — 取得過去 24h DB 相關 Offense<span class="mcp-call qr">list_offenses(filter=last_updated_time&gt;yesterday)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>結構化 HTML/PDF 報告（連線統計、Top SQL、稽核摘要、威脅案件、Offense 清單）</div>
+  </div>
+</div>
+
+
+<h2><span style="background:#e8fdf0;color:#005030;padding:2px 10px;border-radius:12px;font-size:13px">體驗 Experience</span></h2>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#f8fffe">
+    <div class="sc-num" style="background:#27ae60">15</div>
+    <div>
+      <div class="sc-title">SLO 燃盡緊急回應</div>
+      <div class="sc-when">觸發：Instana SLO burn rate &gt; 2x，或 error budget &lt; 20% 剩餘</div>
+    </div>
+    <div class="sc-tags"><span class="tag ti">Instana</span><span class="tag tl">Liberty</span><span class="tag td">Db2</span><span class="tag tm">MQ</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>Instana</strong> — 確認 SLO 狀態與 error budget 消耗速度<span class="mcp-call ins">manage_slo(report)</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>Instana</strong> — 找出造成 SLO 下降的服務與 trace<span class="mcp-call ins">manage_applications(metrics)</span><span class="mcp-call ins">search_spans(error_only=true)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text">依 Trace 指向層並行診斷（3a/3b/3c）</div></div>
+    <div class="flow-row"><div class="step-badge">3a</div><div class="flow-text"><strong>Liberty</strong> — JVM / Thread / Datasource<span class="mcp-call lib">get_jvm_summary</span><span class="mcp-call lib">get_threadpool_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">3b</div><div class="flow-text"><strong>Db2</strong> — 慢 SQL / lock / log<span class="mcp-call db2">get_active_sql</span><span class="mcp-call db2">get_db2_runtime(locks)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3c</div><div class="flow-text"><strong>IBM MQ</strong> — 積壓 / Channel 狀態<span class="mcp-call mq">runmqsc: DISPLAY QSTATUS(*)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Instana</strong> — 建立 Maintenance Window 暫緩 SLO 計算<span class="mcp-call ins">manage_maintenance_windows(create)</span></div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>燃盡根因、預估恢復時間、已建立的 Maintenance Window ID</div>
+  </div>
+</div>
+
+<div class="scenario-card">
+  <div class="sc-header" style="background:#f8fffe">
+    <div class="sc-num" style="background:#27ae60">16</div>
+    <div>
+      <div class="sc-title">跨層全棧事件時間線（Major Incident）</div>
+      <div class="sc-when">觸發：Major Incident 宣告，需要完整的跨系統時間線供 RCA</div>
+    </div>
+    <div class="sc-tags"><span class="tag tq">QRadar</span><span class="tag tg">GDP</span><span class="tag ti">Instana</span><span class="tag tl">Liberty</span><span class="tag tm">MQ</span><span class="tag td">Db2</span></div>
+  </div>
+  <div class="sc-body">
+    <div class="flow-row"><div class="step-badge">1</div><div class="flow-text"><strong>QRadar</strong> — 取得事件期間所有 Offense<span class="mcp-call qr">list_offenses</span></div></div>
+    <div class="flow-row"><div class="step-badge">2</div><div class="flow-text"><strong>GDP</strong> — 取得事件期間 ATA 案件<span class="mcp-call gdp">get_ata_case_info(periodStart, periodEnd)</span></div></div>
+    <div class="flow-row"><div class="step-badge">3</div><div class="flow-text"><strong>Instana</strong> — 取得事件期間所有 error events<span class="mcp-call ins">manage_events(get_events)</span></div></div>
+    <div class="flow-row"><div class="step-badge">4</div><div class="flow-text"><strong>Liberty</strong> — 取得應用狀態歷史<span class="mcp-call lib">get_metrics_summary</span></div></div>
+    <div class="flow-row"><div class="step-badge">5</div><div class="flow-text"><strong>Db2</strong> — 取得稽核事件與診斷日誌<span class="mcp-call db2">get_recent_audit_events</span><span class="mcp-call db2">read_db2diag</span></div></div>
+    <div class="flow-row"><div class="step-badge">6</div><div class="flow-text">將所有資料按時間戳排序，建構統一時間線</div></div>
+    <div class="divider"></div>
+    <div class="output-row"><strong>輸出：</strong>跨系統統一時間線報告（可直接貼入 RCA 文件）</div>
+  </div>
+</div>
+
+
+<h2>▍建議程式架構</h2>
+<div class="arch-grid">
+  <div class="arch-card">
+    <h4>觸發方式</h4>
+    <ul>
+      <li>Webhook：CI/CD pipeline 呼叫（情境 1, 9）</li>
+      <li>排程：cron job 每日/週觸發（情境 10, 14）</li>
+      <li>告警回呼：Instana / QRadar Alert 觸發（情境 2~8, 15）</li>
+      <li>自然語言：Bob 對話即時觸發（全部情境）</li>
+    </ul>
+  </div>
+  <div class="arch-card">
+    <h4>執行策略</h4>
+    <ul>
+      <li>並行查詢：無依賴的 MCP 調用同時發出</li>
+      <li>條件分支：Trace 結果決定下一步查哪個 MCP</li>
+      <li>早期終止：Gate Check 第一個失敗即回傳 NO-GO</li>
+      <li>逐層深入：從 APM 外層往 DB 內層鑽取</li>
+    </ul>
+  </div>
+  <div class="arch-card">
+    <h4>輸出格式</h4>
+    <ul>
+      <li>結構化 JSON：供 CI/CD / webhook 消費</li>
+      <li>HTML 報告：管理層 / 審計用（Bob artifact）</li>
+      <li>告警訊息：Slack / Teams / Email 通知</li>
+      <li>Offense Note：直接寫回 QRadar 留存</li>
+    </ul>
+  </div>
+  <div class="arch-card">
+    <h4>共用資料欄位</h4>
+    <ul>
+      <li>time_window：各情境統一時間範圍</li>
+      <li>service_name：跨 MCP 關聯服務</li>
+      <li>db_host / datasource：跨 Db2+GDP 關聯</li>
+      <li>source_ip：QRadar + GDP 威脅情報關聯</li>
+    </ul>
+  </div>
+</div>
+
+<footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>
