@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8" />
@@ -31,7 +31,7 @@
     font-family:"Segoe UI","Noto Sans TC",sans-serif;
     background:var(--page);
     color:var(--text);
-    font-size:14px;
+    font-size:15px;
     font-weight:400;
     line-height:1.65;
   }
@@ -56,7 +56,7 @@
   .hero-bar{width:6px;height:40px;background:var(--brand);border-radius:4px;flex:none;margin-top:2px}
 
   h1{
-    font-size:28px;
+    font-size:30px;
     font-weight:700;
     line-height:1.25;
     letter-spacing:-.5px;
@@ -65,7 +65,7 @@
 
   .hero p{
     margin-top:8px;
-    font-size:12px;
+    font-size:15px;
     color:var(--muted);
   }
 
@@ -86,7 +86,7 @@
     background:#F8FAFF;
     border-bottom:1px solid var(--border);
     border-left:4px solid var(--brand);
-    font-size:15px;
+    font-size:17px;
     font-weight:700;
     color:#203864;
   }
@@ -100,7 +100,7 @@
     border-radius:6px;
     background:var(--brand-soft);
     color:var(--brand-dark);
-    font-size:12px;
+    font-size:15px;
     font-weight:700;
   }
 
@@ -117,13 +117,13 @@
     border:1px solid var(--border);
     border-radius:10px;
     overflow:hidden;
-    font-size:13px;
+    font-size:15px;
   }
 
   th{
     background:#F8FAFC;
     color:#475467;
-    font-size:12px;
+    font-size:15px;
     font-weight:600;
     text-align:left;
     padding:10px 12px;
@@ -149,7 +149,7 @@
     border-radius:10px;
   }
   .preview-title .bar{width:5px;height:30px;background:var(--brand);border-radius:4px}
-  .preview-title .text{font-size:28px;font-weight:700;color:#172B4D}
+  .preview-title .text{font-size:30px;font-weight:700;color:#172B4D}
 
   .preview-sub{
     margin-top:14px;
@@ -158,7 +158,7 @@
     border:1px solid var(--border);
     border-left:4px solid var(--brand);
     border-radius:0 8px 8px 0;
-    font-size:15px;
+    font-size:17px;
     font-weight:700;
     color:#203864;
   }
@@ -180,11 +180,11 @@
     margin-bottom:8px;
     border:1px solid rgba(0,0,0,.05);
   }
-  .swatch strong{display:block;font-size:13px;margin-bottom:4px}
+  .swatch strong{display:block;font-size:15px;margin-bottom:4px}
 
   code{
     font-family:Consolas,monospace;
-    font-size:12px;
+    font-size:15px;
     background:#F6F8FA;
     color:#475467;
     padding:2px 5px;
@@ -196,7 +196,7 @@
     align-items:center;
     padding:3px 9px;
     border-radius:12px;
-    font-size:11.5px;
+    font-size:15px;
     font-weight:600;
     border:1px solid transparent;
     white-space:nowrap;
@@ -209,18 +209,89 @@
   .blocked{background:var(--blocked-bg);color:var(--blocked-text);border-color:var(--blocked-border)}
   .na{background:var(--na-bg);color:var(--na-text);border-color:var(--na-border)}
 
+  /* ── Alert 說明框 ── */
+  .alert{
+    border-left:4px solid;
+    padding:12px 16px;
+    border-radius:0 8px 8px 0;
+    font-size:15px;
+    margin-bottom:12px;
+  }
+  .alert:last-child{margin-bottom:0}
+  .alert-red   {border-color:#B42318;background:var(--critical-bg)}
+  .alert-orange{border-color:#B54708;background:var(--warning-bg)}
+  .alert-blue  {border-color:var(--brand);background:var(--ready-bg)}
+  .alert strong{font-weight:700}
+  .alert .explain{margin-top:5px;font-size:15px;color:#555}
+
+  /* ── KV Grid 鍵值對 ── */
+  .kv-grid{display:grid;grid-template-columns:200px 1fr;gap:6px 14px}
+  .kv-label{color:var(--muted);font-size:15px;align-self:start;padding-top:1px}
+  .kv-value{font-size:15px;font-weight:500}
+
+  /* ── Timeline 時間線 ── */
+  .timeline{list-style:none;padding:0;margin:0}
+  .tl-item{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:0 16px;
+    padding:14px 0;
+    border-bottom:1px solid #EEF1F5;
+  }
+  .tl-item:last-child{border-bottom:none;padding-bottom:0}
+  .tl-left{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:2px}
+  .tl-time{font-family:Consolas,monospace;font-size:15px;color:var(--muted);white-space:nowrap}
+  .tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--brand);background:#fff;flex:none}
+  .tl-dot.ev-critical{border-color:#B42318;background:var(--critical-bg)}
+  .tl-dot.ev-warning {border-color:#B54708;background:var(--warning-bg)}
+  .tl-dot.ev-db      {border-color:#6941C6;background:var(--partial-bg)}
+  .tl-dot.ev-info    {border-color:var(--muted);background:#F2F4F7}
+  .tl-right{padding-left:14px;border-left:2px solid #E4E7EC}
+  .tl-source{font-size:15px;color:var(--muted);margin-bottom:2px}
+  .tl-title{font-weight:600;font-size:15px;color:#172B4D;margin-bottom:4px}
+  .tl-desc{font-size:15px;color:#444;line-height:1.6}
+  .tl-explain{
+    margin-top:6px;
+    padding:8px 10px;
+    background:#F8FAFF;
+    border-radius:6px;
+    font-size:15px;
+    color:#475467;
+    border-left:3px solid var(--brand-soft);
+  }
+
+  /* ── Two-col 雙欄對比 ── */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .col-box{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+  .col-box-header{
+    padding:10px 14px;
+    background:#F8FAFC;
+    border-bottom:1px solid var(--border);
+    font-size:15px;font-weight:700;color:#475467;
+    text-transform:uppercase;letter-spacing:.05em;
+  }
+  .col-box table{min-width:unset;border:none;border-radius:0}
+  .col-box th{background:transparent;border-bottom:1px solid var(--border)}
+  .col-box tr:last-child td{border-bottom:none}
+  .col-note{padding:10px 14px;font-size:15px;color:var(--muted);background:#FAFBFD;border-top:1px solid var(--border)}
+
   footer{
     text-align:center;
     padding-top:18px;
     margin-top:36px;
     border-top:1px solid var(--border);
     color:#98A2B3;
-    font-size:12px;
+    font-size:15px;
   }
 
   @media(max-width:850px){
     .swatches{grid-template-columns:1fr 1fr}
     .container{padding:24px 14px 40px}
+    .two-col{grid-template-columns:1fr}
+    .kv-grid{grid-template-columns:130px 1fr}
+    .tl-item{grid-template-columns:1fr}
+    .tl-left{flex-direction:row;align-items:center;justify-content:flex-start;margin-bottom:6px}
+    .tl-right{border-left:none;padding-left:0}
   }
   @media(max-width:560px){
     .swatches{grid-template-columns:1fr}
@@ -249,15 +320,15 @@
       <table>
         <thead><tr><th>位置</th><th>字體</th><th>字級</th><th>字重</th></tr></thead>
         <tbody>
-          <tr><td>報表主標題</td><td>Segoe UI / Noto Sans TC</td><td>28px</td><td>700</td></tr>
-          <tr><td>區塊標題</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>700</td></tr>
-          <tr><td>卡片小標</td><td>Segoe UI / Noto Sans TC</td><td>13px</td><td>600</td></tr>
-          <tr><td>一般內文</td><td>Segoe UI / Noto Sans TC</td><td>14px</td><td>400</td></tr>
-          <tr><td>表格標題</td><td>Segoe UI / Noto Sans TC</td><td>12px</td><td>600</td></tr>
-          <tr><td>表格內容</td><td>Segoe UI / Noto Sans TC</td><td>13px</td><td>400</td></tr>
-          <tr><td>備註文字</td><td>Segoe UI / Noto Sans TC</td><td>12px</td><td>400</td></tr>
-          <tr><td>SQL / 路徑 / 指令</td><td>Consolas</td><td>12px</td><td>400</td></tr>
-          <tr><td>Badge</td><td>Segoe UI</td><td>11.5px</td><td>600</td></tr>
+          <tr><td>報表主標題</td><td>Segoe UI / Noto Sans TC</td><td>30px</td><td>700</td></tr>
+          <tr><td>區塊標題</td><td>Segoe UI / Noto Sans TC</td><td>17px</td><td>700</td></tr>
+          <tr><td>卡片小標</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>600</td></tr>
+          <tr><td>一般內文</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>400</td></tr>
+          <tr><td>表格標題</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>600</td></tr>
+          <tr><td>表格內容</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>400</td></tr>
+          <tr><td>備註文字</td><td>Segoe UI / Noto Sans TC</td><td>15px</td><td>400</td></tr>
+          <tr><td>SQL / 路徑 / 指令</td><td>Consolas</td><td>15px</td><td>400</td></tr>
+          <tr><td>Badge</td><td>Segoe UI</td><td>15px</td><td>600</td></tr>
         </tbody>
       </table>
     </div>
@@ -328,8 +399,8 @@
         <tbody>
           <tr><td>表格寬度</td><td>100%</td></tr>
           <tr><td>表頭背景</td><td>#F8FAFC</td></tr>
-          <tr><td>表頭文字</td><td>12px / 600 / #475467</td></tr>
-          <tr><td>表格內容</td><td>13px / 400 / #1F2937</td></tr>
+          <tr><td>表頭文字</td><td>15px / 600 / #475467</td></tr>
+          <tr><td>表格內容</td><td>15px / 400 / #1F2937</td></tr>
           <tr><td>儲存格 Padding</td><td>10px 12px</td></tr>
           <tr><td>列分隔線</td><td>#EEF1F5</td></tr>
           <tr><td>表格圓角</td><td>10px</td></tr>
@@ -339,7 +410,6 @@
       </table>
     </div>
   </section>
-
 
   <section class="section">
     <div class="section-header"><span class="num">6</span>報表顯示順序</div>
@@ -368,6 +438,208 @@
           <tr><td>標題與內容</td><td>14px</td></tr>
           <tr><td>表格儲存格</td><td>10px 12px</td></tr>
           <tr><td>Badge 內距</td><td>3px 9px</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════ 新增元件 ═══════════════ -->
+
+  <section class="section">
+    <div class="section-header"><span class="num">8</span>Alert 說明框</div>
+    <div class="section-body">
+      <p style="font-size:15px;color:var(--muted);margin-bottom:16px">
+        用於強調關鍵發現、風險警告或操作提示。左側 4px 色條區分嚴重等級，內部可包含 <code>&lt;strong&gt;</code> 標題與 <code>.explain</code> 補充說明段。
+      </p>
+
+      <!-- 範例預覽 -->
+      <div class="alert alert-red">
+        <strong>CRITICAL — 嚴重問題標題</strong>
+        <div class="explain">這裡放補充說明，用較小字體（12px）以淺色呈現，給需要深入了解的讀者閱讀。</div>
+      </div>
+      <div class="alert alert-orange">
+        <strong>WARNING — 警告問題標題</strong>
+        <div class="explain">同上，橘色左框代表警告等級，背景使用暖黃色系。</div>
+      </div>
+      <div class="alert alert-blue">
+        <strong>INFO — 資訊提示標題</strong>
+        <div class="explain">藍色左框代表一般資訊或操作說明，背景使用淡藍色系。</div>
+      </div>
+
+      <div style="height:20px"></div>
+      <table>
+        <thead><tr><th>Class</th><th>左框色</th><th>背景色</th><th>使用情境</th></tr></thead>
+        <tbody>
+          <tr><td><code>.alert.alert-red</code></td><td>#B42318</td><td>var(--critical-bg) #FEF3F2</td><td>嚴重風險、立即需要處理的問題</td></tr>
+          <tr><td><code>.alert.alert-orange</code></td><td>#B54708</td><td>var(--warning-bg) #FFFAEB</td><td>警告、需要關注但非立即危急的問題</td></tr>
+          <tr><td><code>.alert.alert-blue</code></td><td>#2F6BFF</td><td>var(--ready-bg) #EFF8FF</td><td>一般資訊、操作說明、備注提醒</td></tr>
+        </tbody>
+      </table>
+      <div style="height:14px"></div>
+      <table>
+        <thead><tr><th>子元素</th><th>樣式</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>strong</code>（直接子元素）</td><td>font-weight: 700</td><td>Alert 的主標題，必填</td></tr>
+          <tr><td><code>.explain</code></td><td>font-size: 15px / color: #555 / margin-top: 5px</td><td>補充說明段，選填</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">9</span>KV Grid 鍵值對列表</div>
+    <div class="section-body">
+      <p style="font-size:15px;color:var(--muted);margin-bottom:16px">
+        用於顯示案件摘要、設定參數等「欄位名稱 ＋ 值」形式的資料，比表格更緊湊。
+        容器使用 <code>.kv-grid</code>，每對資料由 <code>.kv-label</code>（左）和 <code>.kv-value</code>（右）組成。
+      </p>
+
+      <!-- 範例預覽 -->
+      <div style="border:1px solid var(--border);border-radius:8px;padding:16px;background:#fff;margin-bottom:20px">
+        <div class="kv-grid">
+          <span class="kv-label">案件編號</span><span class="kv-value">#57</span>
+          <span class="kv-label">風險等級</span><span class="kv-value"><span class="badge critical">CRITICAL</span></span>
+          <span class="kv-label">被攻擊主機</span><span class="kv-value"><code>10.107.85.123</code></span>
+          <span class="kv-label">偵測時間範圍</span><span class="kv-value"><code>2026-08-17 ～ 2026-08-20</code></span>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Class</th><th>樣式</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>.kv-grid</code></td><td>display: grid / grid-template-columns: 200px 1fr / gap: 6px 14px</td><td>外層容器，定義兩欄比例</td></tr>
+          <tr><td><code>.kv-label</code></td><td>font-size: 15px / color: var(--muted) #667085</td><td>左欄：欄位名稱，淺灰色</td></tr>
+          <tr><td><code>.kv-value</code></td><td>font-size: 15px / font-weight: 500</td><td>右欄：對應的值，可嵌入 Badge 或 code</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">10</span>Timeline 時間線</div>
+    <div class="section-body">
+      <p style="font-size:15px;color:var(--muted);margin-bottom:16px">
+        用於呈現依時間排列的事件序列（如攻擊鏈、操作歷程）。
+        外層 <code>&lt;ul class="timeline"&gt;</code>，每個事件為 <code>&lt;li class="tl-item"&gt;</code>，
+        內含左欄時間 + 圓點 (<code>.tl-left</code>) 與右欄說明 (<code>.tl-right</code>)。
+        右欄可選填解說框 (<code>.tl-explain</code>)。
+      </p>
+
+      <!-- 範例預覽 -->
+      <div style="border:1px solid var(--border);border-radius:8px;padding:16px 20px;background:#fff;margin-bottom:20px">
+        <ul class="timeline">
+          <li class="tl-item">
+            <div class="tl-left">
+              <span class="tl-time">14:00:38</span>
+              <span class="tl-dot ev-warning"></span>
+            </div>
+            <div class="tl-right">
+              <div class="tl-source">來源：QRadar · 主機 db2v1159rhel810</div>
+              <div class="tl-title">Root 帳號遠端登入（WARNING 等級）</div>
+              <div class="tl-desc">內容說明文字，13px，深灰色，line-height 1.6。</div>
+              <div class="tl-explain">解說框（.tl-explain）：用淡藍底色補充技術說明或白話解釋，選填。</div>
+            </div>
+          </li>
+          <li class="tl-item">
+            <div class="tl-left">
+              <span class="tl-time">14:02:37</span>
+              <span class="tl-dot ev-critical"></span>
+            </div>
+            <div class="tl-right">
+              <div class="tl-source">來源：QRadar + UBA 引擎</div>
+              <div class="tl-title">帳號切換觸發異常警報（CRITICAL 等級）</div>
+              <div class="tl-desc">圓點使用紅色 <code>.ev-critical</code>，用於最高嚴重度事件。</div>
+            </div>
+          </li>
+          <li class="tl-item">
+            <div class="tl-left">
+              <span class="tl-time">14:03:24</span>
+              <span class="tl-dot ev-db"></span>
+            </div>
+            <div class="tl-right">
+              <div class="tl-source">來源：Db2 資料庫日誌</div>
+              <div class="tl-title">資料庫操作事件（DB 等級，紫色圓點）</div>
+              <div class="tl-desc"><code>.ev-db</code> 用於資料庫層的 DDL 操作事件。</div>
+            </div>
+          </li>
+          <li class="tl-item">
+            <div class="tl-left">
+              <span class="tl-time">14:16:50</span>
+              <span class="tl-dot ev-info"></span>
+            </div>
+            <div class="tl-right">
+              <div class="tl-source">來源：系統日誌</div>
+              <div class="tl-title">一般資訊事件（INFO 等級，灰色圓點）</div>
+              <div class="tl-desc"><code>.ev-info</code> 用於無直接風險的一般系統事件。</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <table>
+        <thead><tr><th>Class</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>.timeline</code></td><td>外層 ul，list-style: none</td></tr>
+          <tr><td><code>.tl-item</code></td><td>單一事件列，grid 兩欄（110px 時間欄 + 1fr 說明欄），底部分隔線</td></tr>
+          <tr><td><code>.tl-left</code></td><td>左欄：時間文字 + 圓點，靠右對齊</td></tr>
+          <tr><td><code>.tl-time</code></td><td>Consolas 15px 灰色時間戳記</td></tr>
+          <tr><td><code>.tl-dot</code></td><td>基本圓點（藍色，代表一般事件）</td></tr>
+          <tr><td><code>.tl-dot.ev-critical</code></td><td>紅色圓點：CRITICAL 嚴重事件</td></tr>
+          <tr><td><code>.tl-dot.ev-warning</code></td><td>橘色圓點：WARNING 警告事件</td></tr>
+          <tr><td><code>.tl-dot.ev-db</code></td><td>紫色圓點：資料庫 DDL 操作事件</td></tr>
+          <tr><td><code>.tl-dot.ev-info</code></td><td>灰色圓點：INFO 一般資訊事件</td></tr>
+          <tr><td><code>.tl-right</code></td><td>右欄：說明區，左側 2px 灰色分隔線，padding-left: 14px</td></tr>
+          <tr><td><code>.tl-source</code></td><td>15px 灰色來源標記（選填）</td></tr>
+          <tr><td><code>.tl-title</code></td><td>15px 700 深藍色事件標題</td></tr>
+          <tr><td><code>.tl-desc</code></td><td>15px 深灰色事件描述</td></tr>
+          <tr><td><code>.tl-explain</code></td><td>解說框：淡藍底色，左側 3px 淡藍邊框，15px 灰色，選填</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header"><span class="num">11</span>Two-col 雙欄對比</div>
+    <div class="section-body">
+      <p style="font-size:15px;color:var(--muted);margin-bottom:16px">
+        用於並排呈現兩組相關資料（如：安全監控 vs. 資料庫日誌，前後對比等）。
+        外層 <code>.two-col</code> 為 1fr 1fr 的 grid，每欄為 <code>.col-box</code>，
+        包含 <code>.col-box-header</code> 標題列、嵌套的 table，以及選填的 <code>.col-note</code> 底部備注。
+      </p>
+
+      <!-- 範例預覽 -->
+      <div class="two-col" style="margin-bottom:20px">
+        <div class="col-box">
+          <div class="col-box-header">左側標題（如：系統 A 紀錄）</div>
+          <table>
+            <thead><tr><th>時間</th><th>事件</th><th>帳號</th></tr></thead>
+            <tbody>
+              <tr><td><code>14:00:38</code></td><td>Root 登入</td><td><code>root</code></td></tr>
+              <tr><td><code>14:02:37</code></td><td>帳號切換</td><td><code>db2inst1</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-box">
+          <div class="col-box-header">右側標題（如：系統 B 紀錄）</div>
+          <table>
+            <thead><tr><th>時間</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td><code>14:03:24</code></td><td>CREATE SCHEMA</td></tr>
+              <tr><td><code>14:05:04</code></td><td>CREATE TABLE</td></tr>
+            </tbody>
+          </table>
+          <div class="col-note">底部備注（.col-note）：用於補充說明或分析結論，選填。</div>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>Class</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td><code>.two-col</code></td><td>外層容器：display grid / grid-template-columns: 1fr 1fr / gap: 16px。RWD &lt;800px 自動改為單欄。</td></tr>
+          <tr><td><code>.col-box</code></td><td>單欄容器：1px 邊框、8px 圓角、overflow hidden</td></tr>
+          <tr><td><code>.col-box-header</code></td><td>欄標題：15px 600 大寫灰字、#F8FAFC 底、底部分隔線</td></tr>
+          <tr><td><code>.col-box table</code></td><td>欄內表格：min-width 取消、border 取消（由 col-box 提供）</td></tr>
+          <tr><td><code>.col-note</code></td><td>欄底備注：15px 灰色、#FAFBFD 底色、頂部分隔線，選填</td></tr>
         </tbody>
       </table>
     </div>
